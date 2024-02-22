@@ -17,6 +17,6 @@ router.get('/', function tesRoute(req: Request, res: Response) {
     res.json({"message": "ok"})
 })
 
-app.use('/api/users',userRouter)
+app.use('/api/user',userRouter)
 
 export default app

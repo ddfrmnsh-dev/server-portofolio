@@ -24,21 +24,21 @@ const userLogin = async (req: Request, res: Response) => {
             const isMatch = await bcrypt.compare(password, user.password);
             if(isMatch){
                 const token = jwt.sign({email}, <Secret>secret, {expiresIn: '1h'})
-                res.status(200).json({"user" :{
+                return res.status(200).json({"user" :{
                     "name" : user.name,
                     "email" : user.email,
                     "createdAt" : user.createdAt,
                     "updatedAt" : user.updatedAt,
                 },token})
             } else {
-                res.status(401).json({message: "Password salah"})
+                return res.status(401).json({message: "Password salah"})
             }
         } else {
             res.status(401).json({message: "User tidak ditemukan"})
         }
-        res.status(201).json(user);
+        return res.status(201).json(user);
     } catch (error) {
-        res.status(500).json({error :"Error"})
+        return res.status(500).json({error :"Error"})
     }
 }
 
