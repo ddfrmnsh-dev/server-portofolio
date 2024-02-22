@@ -2,12 +2,16 @@ import express, { Request, Response } from "express";
 import jwt, {Secret} from 'jsonwebtoken';
 
 import {authMiddleware} from "../middleware/authMiddleware";
+import * as userController from '../controllers/userController'
 import dotenv from 'dotenv';
 dotenv.config();
 
 
 const router = express.Router()
 let secret = process.env.TOKEN_SECRET
+
+router.post('/register', userController.createNewUser)
+router.post('/checkAuth', userController.userLogin)
 
 router.post('/login', (req:Request, res: Response) => {
      // Proses autentikasi pengguna
@@ -36,5 +40,6 @@ router.post('/login', (req:Request, res: Response) => {
 //     res.json({ username });
 // });
 })
+
 
 export default router;
