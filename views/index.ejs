@@ -120,9 +120,9 @@
           .then((response) => response.json())
           .then((data) => {
             // Lakukan sesuatu dengan data yang diterima, misalnya simpan token JWT di localStorage
-            localStorage.setItem("Authorization", `Bearer ${data.token}`);
+            localStorage.setItem("token", `Bearer ${data.token}`);
             // Lakukan redirect jika ada informasi redirect yang diterima
-            console.log("get token", localStorage);
+            console.log("Token:", localStorage.getItem("token"));
             if (data.redirect) {
               window.location.href = data.redirect;
             }

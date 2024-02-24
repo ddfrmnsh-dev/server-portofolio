@@ -18,7 +18,7 @@ const userLogin = async (req: Request, res: Response) => {
                     "email" : user.email,
                     "createdAt" : user.createdAt,
                     "updatedAt" : user.updatedAt,
-                },token})
+                },token: `Bearer ${token}`})
             } else {
                 return res.status(401).json({message: "Password salah"})
             }
@@ -38,7 +38,7 @@ const checkAuth = async (req: Request, res: Response) => {
         if(user){
             const isMatch = await bcrypt.compare(password, user.password);
             if(isMatch){
-                const token = jwt.sign({email}, <Secret>secret, {expiresIn: '1h'})
+                const token = jwt.sign({email}, <Secret>secret, {expiresIn: '60000'})
                 return res.status(200).json({user :{
                     "name" : user.name,
                     "email" : user.email,

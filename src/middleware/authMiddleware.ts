@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, {Secret} from 'jsonwebtoken';
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const authMiddlewares = (req: Request, res: Response, next: NextFunction) => {
     // const token = req.header('Authorization')
     const token = req.headers.authorization?.split(' ')[1];
 
@@ -22,32 +22,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     }
 }
 
-// export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-//       const token = req.headers.authorization?.split(' ')[1];
-//       console.log("cek Token", token)
-//     // const token = req.header('Authorization')
-
-
-//     if(!token) {
-//         return res.status(401).json({message: "Token tidak tesedia, access denied"})
-//     }
-
-//     try {
-        
-//         let secret = process.env.TOKEN_SECRET
-//         jwt.verify(token, <Secret>secret, (err, decoded) => {
-//         if (err) {
-//             return res.status(401).json({ message: 'Token tidak valid' });
-//         }
-//         req.body = decoded;
-//         next();
-//     });
-//     } catch (e) {
-//         return res.status(401).json({message: "Token invalid"})    
-//     }
-// }
-
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     const authorizationHeader = req.headers.authorization;
     console.log("Header Authorization:", authorizationHeader);
 
@@ -63,9 +38,17 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.TOKEN_SECRET as string);
-        req.body = decoded;
+        // const decoded = jwt.verify(token, process.env.TOKEN_SECRET as string);
+        // req.decoded = decoded;
+        // next();
+        let secret = process.env.TOKEN_SECRET
+        jwt.verify(token, <Secret>secret, (err, decoded) => {
+        req.decoded = decoded
+        if (err) {
+            return res.status(401).json({ message: 'Token tidak valid' });
+        }
         next();
+    });
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
             return res.status(401).json({ message: "Token kedaluwarsa, akses ditolak" });
@@ -73,3 +56,8 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
         return res.status(401).json({ message: "Token tidak valid, akses ditolak" });
     }
 };
+
+export default {
+    isAuthenticated
+
+}
