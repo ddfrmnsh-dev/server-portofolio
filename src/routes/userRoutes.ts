@@ -3,6 +3,7 @@ import jwt, {Secret} from 'jsonwebtoken';
 
 import {authMiddleware} from "../middleware/authMiddleware";
 import * as userController from '../controllers/userController'
+import * as AuthController from '../controllers/AuthController'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -10,7 +11,8 @@ dotenv.config();
 const router = express.Router()
 
 router.post('/register', userController.createNewUser)
-router.post('/login', userController.userLogin)
+router.post('/login', AuthController.userLogin)
+router.post('/checkAuth', AuthController.checkAuth)
 router.get('/checkMiddleware', authMiddleware, (req: Request, res:Response) => {
     const data = 'cek oke'
 

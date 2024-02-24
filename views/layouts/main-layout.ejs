@@ -4,8 +4,19 @@
     <%- include('../partials/head'); %>
   </head>
   <body>
-    <header><%- include('../partials/header'); %></header>
-    <div><%- body %></div>
-    <footer><%- include('../partials/footer'); %></footer>
+    <div class="antialiased bg-gray-50 dark:bg-gray-900">
+      <header><%- include('../partials/header'); %></header>
+      <aside
+        class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+        aria-label="Sidenav"
+        id="drawer-navigation"
+      >
+        <%- include('../partials/aside'); %>
+      </aside>
+      <!-- <div class="antialiased bg-gray-50 dark:bg-gray-900"></div> -->
+      <main class="p-4 md:ml-64 h-auto pt-20"><%- body %></main>
+      <footer><%- include('../partials/footer'); %></footer>
+    </div>
   </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </html>
