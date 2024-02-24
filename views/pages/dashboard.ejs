@@ -1,1 +1,23 @@
 <div>test dashboard</div>
+<script>
+  function fetchDashboardData() {
+    const token = localStorage.getItem("token");
+    fetch("/dashboard", {
+      method: "GET",
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then((response) => {
+        // Handle response
+      })
+      .catch((error) => {
+        // Handle error
+      });
+  }
+
+  // Panggil fungsi fetchDashboardData saat halaman dimuat
+  document.addEventListener("DOMContentLoaded", function () {
+    fetchDashboardData();
+  });
+</script>

@@ -32,7 +32,12 @@ const adminLogin = async (req: Request, res: Response) => {
 }
 
 const getDashboardAdmin = async (req: Request, res: Response) => {
-    return res.render('pages/dashboard', {layout: 'layouts/main-layout', title:'Dashboard'})
+    try {
+        return res.render('pages/dashboard', {layout: 'layouts/main-layout', title:'Dashboard'})
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
 }
 
 

@@ -123,6 +123,32 @@
             localStorage.setItem("token", `Bearer ${data.token}`);
             // Lakukan redirect jika ada informasi redirect yang diterima
             console.log("Token:", localStorage.getItem("token"));
+
+            const headers = {
+              Authorization: localStorage.getItem("token"),
+              "Custom-Header": "Nilai-Header-Kustom",
+            };
+            console.log("ceklss", headers);
+
+            // Membuat permintaan ke dashboard dengan data headers
+            fetch("/dashboard", {
+              method: "GET",
+              headers: headers,
+            })
+              .then((response) => {
+                if (response.ok) {
+                  return response.json();
+                } else {
+                  throw new Error("Gagal mengambil data dari server");
+                }
+              })
+              .then((data) => {
+                console.log("Data dari server:", data);
+                // Lakukan sesuatu dengan data yang diterima, misalnya memperbarui antarmuka pengguna
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
             if (data.redirect) {
               window.location.href = data.redirect;
             }
