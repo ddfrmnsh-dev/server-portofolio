@@ -4,6 +4,7 @@ import jwt, {Secret} from 'jsonwebtoken';
 import authMiddleware from "../middleware/authMiddleware";
 import * as userController from '../controllers/userController'
 import * as AuthController from '../controllers/authController'
+import * as adminContller from '../controllers/adminController'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -18,5 +19,6 @@ router.get('/checkMiddleware', authMiddleware.isAuthenticated , (req: Request, r
 
     return res.json({message: data})
 })
+router.get('/checkAuths',authMiddleware.isAuthenticated, adminContller.checkData)
 
 export default router;

@@ -25,7 +25,7 @@ router.get('/', function tesRoute(req: Request, res: Response) {
     return res.json({"message": "ok"})
 })
 
-app.use(adminRouter)
+app.use('/admin',adminRouter)
 
 app.use(userRouter)
 

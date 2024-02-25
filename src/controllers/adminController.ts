@@ -31,7 +31,7 @@ const adminLogin = async (req: Request, res: Response) => {
     }
 }
 
-const getDashboardAdmin = async (req: Request, res: Response) => {
+const viewDashboard = async (req: Request, res: Response) => {
     try {
         return res.render('pages/dashboard', {layout: 'layouts/main-layout', title:'Dashboard'})
     } catch (error) {
@@ -40,8 +40,17 @@ const getDashboardAdmin = async (req: Request, res: Response) => {
     }
 }
 
+const checkData = async (req: Request, res: Response) => {
+    try {
+        res.json({ message: 'Halo, ' + req.decoded.user + '! Anda memiliki role ' + req.decoded.email });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
 export {
     adminLogin,
-    getDashboardAdmin
+    viewDashboard,
+    checkData
 }
