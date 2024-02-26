@@ -38,7 +38,98 @@ const getUserByEmail = async (email: string) => {
         error
     }
 }
+
+const getUser = async (id: number) => {
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+        return findUser
+    } catch (error) {
+        console.log("Error", error)
+        error
+    }
+}
+
+const updateUser = async (id: number, name: string, email: string, password: string) => {
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+        if(findUser){
+            const hashPwd = await bycrypt.hash(password, 10);
+            const updateUser = await prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    name,
+                    email,
+                    password: hashPwd
+                }
+            })
+            //return data only selected fields
+            
+            return updateUser
+        } else {
+            throw new Error("User not found")
+        }
+    } catch (error) {
+        console.log("Error", error)
+        error
+    }
+}
+
+const deleteUser = async (id: number) => {
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+        if(findUser){
+            const deleteUser = await prisma.user.delete({
+                where: {
+                    id
+                }
+            })
+            return deleteUser
+        } else {
+            throw new Error("User not found")
+        }
+    } catch (error) {
+        console.log("Error", error)
+        error
+    }
+}
+
+const getAllUser = async () => {
+    try {
+        const findUser = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        })
+        return findUser
+    } catch (error) {
+        console.log("Error", error)
+        error
+    }
+}
+
 export {
     createUser,
-    getUserByEmail
+    getUserByEmail,
+    getUser,
+    updateUser,
+    deleteUser,
+    getAllUser
 }

@@ -17,6 +17,8 @@ router.post('/signin', adminController.adminLogin)
 router.post('/logout', adminController.adminLogin)
 
 router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
+router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);
+router.post('/updateUser', authMiddleware.isAuthenticated, adminController.updateUser);
 
 // router.get('/', (req:Request, res: Response ) => {
 //     return res.render('pages/home', {layout:'layouts/main-layout',title: 'Login'});

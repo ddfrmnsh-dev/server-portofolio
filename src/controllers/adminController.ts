@@ -48,9 +48,38 @@ const checkData = async (req: Request, res: Response) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
+const getAllUser = async (req: Request, res: Response) => {
+    try {
+        const users = await userService.getAllUser();
+        return res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+//create function update user get id by params
+const updateUser = async (req: Request, res: Response) => {
+    try {
+        const { id, name, email, password } = req.body;
+        const user = await userService.getUser(id);
+        if (user) {
+            // const hashPwd = await bcrypt.hash(password, 10);
+            const updateUser = await userService.updateUser(id, name, email, password);
+            return res.status(200).json(updateUser);
+        } else {
+            return res.status(404).json({ message: "User tidak ditemukan" });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
 export {
     adminLogin,
     viewDashboard,
-    checkData
+    checkData,
+    getAllUser,
+    updateUser
 }
