@@ -1,5 +1,6 @@
 declare namespace Express {
     interface Request{
-        decoded?: any
+        decoded?: any,
+        session: any
     }
 }

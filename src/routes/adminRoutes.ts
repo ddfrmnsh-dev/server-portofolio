@@ -9,19 +9,16 @@ dotenv.config();
 
 const router = express.Router()
 
-router.get('/', (req:Request, res: Response ) => {
-    return res.render('index', {layout:'index',title: 'Login'});
-})
+router.get('/signin', adminController.viewSignin)
+router.post('/signin', adminController.adminLoginSession)
 
-router.post('/signin', adminController.adminLogin)
+router.use(authMiddleware.isLogin)
 router.post('/logout', adminController.adminLogin)
+router.get('/dashboard', adminController.viewDashboard);
 
-router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
-router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);
-router.post('/updateUser', authMiddleware.isAuthenticated, adminController.updateUser);
-
-// router.get('/', (req:Request, res: Response ) => {
-//     return res.render('pages/home', {layout:'layouts/main-layout',title: 'Login'});
-// })
+// router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
+// router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);
+// router.put('/updateUser/:id', authMiddleware.isAuthenticated, adminController.updateUser);
+// router.delete('/deleteUser/:id', authMiddleware.isAuthenticated, adminController.deleteUser);
 
 export default router;

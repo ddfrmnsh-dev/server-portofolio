@@ -5,6 +5,24 @@ import jwt, {Secret} from 'jsonwebtoken';
 import { User } from "@prisma/client";
 
 let secret = process.env.TOKEN_SECRET
+
+const viewSignin = (req: Request, res: Response) => {
+    try {
+        const alertMessage = req.flash('alertMessage');
+        const alertStatus = req.flash('alertStatus');
+        const alert = { message: alertMessage, status: alertStatus };
+        if(req.session.user == null || req.session.user == undefined ){
+            res.render('index', {layout:'index',title: 'Login', alert});
+        }else {
+            res.redirect('/admin/dashboard');
+        }
+        // res.render('index', {layout:'index',title: 'Login'});
+    } catch (error) {
+        res.redirect('/admin/signin');
+    }
+
+   
+}
 const adminLogin = async (req: Request, res: Response) => {
     const {email, password} = req.body;
     try {
@@ -28,6 +46,37 @@ const adminLogin = async (req: Request, res: Response) => {
         return res.status(201).json(user);
     } catch (error) {
         return res.status(500).json({error :"Error"})
+    }
+}
+const adminLoginSession = async (req: Request, res: Response) => {
+    const {email, password} = req.body;
+    try {
+        const user = await userService.getUserByEmail(email);
+        if(!user){
+            req.flash('alertMessage', 'User yang anda masukan tidak ada!!');
+            req.flash('alertStatus', 'danger');
+            res.redirect('/admin/signin');
+        }
+        if(user){
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+            req.flash('alertMessage', 'Password yang anda masukan tidak cocok!!');
+            req.flash('alertStatus', 'danger');
+            res.redirect('/admin/signin');
+            }
+
+            req.session.user = {
+             id: user.id,
+             email: user.email,
+            }
+        }
+        console.log("cek user", user)
+
+        return res.redirect('/admin/dashboard');
+    } catch (error) {
+        console.log("cek error sessio", error)
+        // return res.status(500).json({error :"Error"})
+        return res.redirect('/admin/signin');
     }
 }
 
@@ -61,11 +110,12 @@ const getAllUser = async (req: Request, res: Response) => {
 //create function update user get id by params
 const updateUser = async (req: Request, res: Response) => {
     try {
-        const { id, name, email, password } = req.body;
-        const user = await userService.getUser(id);
+        let userId = parseInt(req.params.id)
+        const { name, email, password } = req.body;
+        const user = await userService.getUser(userId);
         if (user) {
             // const hashPwd = await bcrypt.hash(password, 10);
-            const updateUser = await userService.updateUser(id, name, email, password);
+            const updateUser = await userService.updateUser(userId, name, email, password);
             return res.status(200).json(updateUser);
         } else {
             return res.status(404).json({ message: "User tidak ditemukan" });
@@ -76,10 +126,27 @@ const updateUser = async (req: Request, res: Response) => {
     }
 }
 
+const deleteUser = async (req:Request, res: Response) => {
+    try {
+        let userId = parseInt(req.params.id)
+        const user = await userService.getUser(userId);
+        if (user) {
+            const deleteUser = await userService.deleteUser(userId);
+            return res.status(200).json({ message: "User berhasil dihapus", deleteUser });
+        }
+    } catch (error) {
+        console.log("Error :", error)
+        return res.status(500).json({error: "Internal Server Error"})
+    }
+}
+
 export {
     adminLogin,
     viewDashboard,
     checkData,
     getAllUser,
-    updateUser
+    updateUser,
+    deleteUser,
+    viewSignin,
+    adminLoginSession
 }

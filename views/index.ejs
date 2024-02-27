@@ -23,12 +23,12 @@
           Sign in to your account
         </h2>
       </div>
-
+      <%- include('./partials/message.ejs') %>
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form
           class="space-y-6"
           id="loginForm"
-          action="/checkAuth"
+          action="/admin/signin"
           method="POST"
         >
           <div>
@@ -97,7 +97,7 @@
       </div>
     </div>
   </body>
-  <script>
+  <!-- <script>
     document
       .getElementById("loginForm")
       .addEventListener("submit", function (event) {
@@ -156,5 +156,5 @@
           })
           .catch((error) => console.error("Error:", error));
       });
-  </script>
+  </script> -->
 </html>

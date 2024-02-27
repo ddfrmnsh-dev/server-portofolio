@@ -23,7 +23,7 @@ const userLogin = async (req: Request, res: Response) => {
                 return res.status(401).json({message: "Password salah"})
             }
         } else {
-            res.status(401).json({message: "User tidak ditemukan"})
+            return res.status(401).json({message: "User tidak ditemukan"})
         }
         return res.status(201).json(user);
     } catch (error) {

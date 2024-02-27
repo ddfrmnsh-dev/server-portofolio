@@ -70,6 +70,13 @@ const updateUser = async (id: number, name: string, email: string, password: str
                     name,
                     email,
                     password: hashPwd
+                },
+                select:{
+                    id: true,
+                    name: true,
+                    email: true,
+                    createdAt: true,
+                    updatedAt: true
                 }
             })
             //return data only selected fields
@@ -95,6 +102,13 @@ const deleteUser = async (id: number) => {
             const deleteUser = await prisma.user.delete({
                 where: {
                     id
+                },
+                select:{
+                    id: true,
+                    name: true,
+                    email: true,
+                    createdAt: true,
+                    updatedAt: true
                 }
             })
             return deleteUser

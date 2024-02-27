@@ -57,7 +57,18 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export default {
-    isAuthenticated
+const isLogin = (req: Request, res: Response, next: NextFunction) => {
+  if (req.session.user == null || req.session.user == undefined) {
+    console.log("cek session", req.session.user);
+    req.flash('alertMessage', 'Session telah habis silahkan signin kembali!!');
+    req.flash('alertStatus', 'danger');
+    res.redirect('/admin/signin');
+  } else {
+    next();
+  }
+}
 
+export default {
+    isAuthenticated,
+    isLogin
 }
