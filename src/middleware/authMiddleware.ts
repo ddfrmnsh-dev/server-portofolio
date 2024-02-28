@@ -59,7 +59,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
 
 const isLogin = (req: Request, res: Response, next: NextFunction) => {
   if (req.session.user == null || req.session.user == undefined) {
-    console.log("cek session", req.session.user);
+    console.log("cek session", req.session);
     req.flash('alertMessage', 'Session telah habis silahkan signin kembali!!');
     req.flash('alertStatus', 'danger');
     res.redirect('/admin/signin');

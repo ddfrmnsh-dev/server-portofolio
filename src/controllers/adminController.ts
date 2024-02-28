@@ -25,7 +25,11 @@ const viewSignin = (req: Request, res: Response) => {
 }
 const adminLogin = async (req: Request, res: Response) => {
     const {email, password} = req.body;
+    console.log(email, password);
     try {
+        if(email == undefined || password == undefined){
+            return res.status(401).json({message: "Email atau Password tidak boleh kosong"})
+        }
         const user = await userService.getUserByEmail(email);
         if(user){
             const isMatch = await bcrypt.compare(password, user.password);
@@ -53,25 +57,28 @@ const adminLoginSession = async (req: Request, res: Response) => {
     try {
         const user = await userService.getUserByEmail(email);
         if(!user){
-            req.flash('alertMessage', 'User yang anda masukan tidak ada!!');
+            req.flash('alertMessage', 'User or Password is not correct');
             req.flash('alertStatus', 'danger');
-            res.redirect('/admin/signin');
+            return res.redirect('/admin/signin');
         }
         if(user){
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-            req.flash('alertMessage', 'Password yang anda masukan tidak cocok!!');
+            req.flash('alertMessage', 'User or Password is not correct');
             req.flash('alertStatus', 'danger');
-            res.redirect('/admin/signin');
+            return res.redirect('/admin/signin');
             }
-
+            // console.log("cek user", user)
+            req.flash('alertMessage', 'Successfully login');
+            req.flash('alertStatus', 'success');
+            
             req.session.user = {
-             id: user.id,
-             email: user.email,
+                id: user.id,
+                email: user.email,
             }
         }
-        console.log("cek user", user)
-
+        req.flash('alertMessage', 'Successfully login');
+        req.flash('alertStatus', 'success');
         return res.redirect('/admin/dashboard');
     } catch (error) {
         console.log("cek error sessio", error)
@@ -79,10 +86,21 @@ const adminLoginSession = async (req: Request, res: Response) => {
         return res.redirect('/admin/signin');
     }
 }
-
+const adminLogout = async (req: Request, res: Response) => {
+    try {
+        req.session.destroy();
+        return res.redirect('/admin/signin');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 const viewDashboard = async (req: Request, res: Response) => {
     try {
-        return res.render('pages/dashboard', {layout: 'layouts/main-layout', title:'Dashboard'})
+        const alertMessage = req.flash("alertMessage");
+        const alertStatus = req.flash("alertStatus");
+        const alert = { message: alertMessage, status: alertStatus };
+        return res.render('pages/dashboard', {layout: 'layouts/main-layout', title:'Dashboard', alert})
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -148,5 +166,6 @@ export {
     updateUser,
     deleteUser,
     viewSignin,
-    adminLoginSession
+    adminLoginSession,
+    adminLogout
 }
