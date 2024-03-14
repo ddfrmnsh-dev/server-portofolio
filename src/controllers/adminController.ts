@@ -107,6 +107,17 @@ const viewDashboard = async (req: Request, res: Response) => {
     }
 }
 
+const viewProject = async (req: Request, res: Response) => {
+    try {
+        const alertMessage = req.flash("alertMessage");
+        const alertStatus = req.flash("alertStatus");
+        const alert = { message: alertMessage, status: alertStatus };
+        return res.render('pages/project/index', {layout: 'layouts/main-layout', title:'Project', alert})
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 const checkData = async (req: Request, res: Response) => {
     try {
         res.json({ message: 'Halo, ' + req.decoded.user + '! Anda memiliki role ' + req.decoded.email });
@@ -167,5 +178,6 @@ export {
     deleteUser,
     viewSignin,
     adminLoginSession,
-    adminLogout
+    adminLogout,
+    viewProject
 }

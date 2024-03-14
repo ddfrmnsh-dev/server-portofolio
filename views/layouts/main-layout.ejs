@@ -15,8 +15,12 @@
       </aside>
       <!-- <div class="antialiased bg-gray-50 dark:bg-gray-900"></div> -->
       <%- include('../partials/message') %>
-      <main class="p-4 md:ml-64 h-auto pt-20"><%- body %></main>
-      <footer><%- include('../partials/footer'); %></footer>
+      <main class="p-4 md:ml-64 h-auto pt-20 h-screen"><%- body %></main>
+      <footer
+        class="md:ml-64 shadow sm:flex sm:items-center sm:justify-between p-4 sm:p-6 xl:p-8 dark:bg-gray-800 antialiased"
+      >
+        <%- include('../partials/footer'); %>
+      </footer>
     </div>
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

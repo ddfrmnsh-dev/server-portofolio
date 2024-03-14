@@ -15,6 +15,7 @@ router.post('/signin', adminController.adminLoginSession)
 router.use(authMiddleware.isLogin)
 router.get('/logout', adminController.adminLogout)
 router.get('/dashboard', adminController.viewDashboard);
+router.get('/project', adminController.viewProject);
 
 // router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
 // router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);
