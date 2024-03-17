@@ -9,13 +9,13 @@ dotenv.config();
 
 const router = express.Router()
 
-router.get('/signin', adminController.viewSignin)
-router.post('/signin', adminController.adminLoginSession)
+// router.get('/signin', adminController.viewSignin)
+// router.post('/signin', adminController.adminLoginSession)
 
-router.use(authMiddleware.isLogin)
-router.get('/logout', adminController.adminLogout)
-router.get('/dashboard', adminController.viewDashboard);
-router.get('/project', adminController.viewProject);
+// router.use(authMiddleware.isLogin)
+// router.get('/logout', adminController.adminLogout)
+// router.get('/dashboard', adminController.viewDashboard);
+// router.get('/project', adminController.viewProject);
 
 // router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
 // router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);

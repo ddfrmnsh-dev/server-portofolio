@@ -7,6 +7,7 @@ import ejsLayout from 'express-ejs-layouts';
 import flash from "connect-flash";
 import session from 'express-session';
 import cookieParser from "cookie-parser";
+import 'dotenv/config'
 
 const app = express()
 const router = express.Router()
