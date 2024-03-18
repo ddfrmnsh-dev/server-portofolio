@@ -36,8 +36,9 @@ async function userLogin(req: Request, res: Response, next: NextFunction) {
     try {
         let user = await userService.getUserByEmail(email);
         if (user) {
-            console.log("cek", user.password);
-            console.log(typeof user.password);
+            if (!user.password) {
+                return next(new Error("CREDENTIAL_CORRUPT"))
+            }
             let isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
                 let token = jwt.sign({ email, user: user.name }, secret as Secret, {

@@ -1,8 +1,7 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as userService from "../services/userService";
 import bcrypt from "bcrypt";
-import jwt, {Secret} from 'jsonwebtoken';
-import { User } from "@prisma/client";
+import jwt, { Secret } from 'jsonwebtoken';
 
 let secret = process.env.TOKEN_SECRET
 
@@ -11,9 +10,9 @@ const viewSignin = (req: Request, res: Response) => {
         const alertMessage = req.flash('alertMessage');
         const alertStatus = req.flash('alertStatus');
         const alert = { message: alertMessage, status: alertStatus };
-        if(req.session.user == null || req.session.user == undefined ){
-            res.render('index', {layout:'index',title: 'Login', alert});
-        }else {
+        if (req.session.user == null || req.session.user == undefined) {
+            res.render('index', { layout: 'index', title: 'Login', alert });
+        } else {
             res.redirect('/admin/dashboard');
         }
         // res.render('index', {layout:'index',title: 'Login'});
@@ -21,57 +20,65 @@ const viewSignin = (req: Request, res: Response) => {
         res.redirect('/admin/signin');
     }
 
-   
+
 }
-const adminLogin = async (req: Request, res: Response) => {
-    const {email, password} = req.body;
+const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
     console.log(email, password);
     try {
-        if(email == undefined || password == undefined){
-            return res.status(401).json({message: "Email atau Password tidak boleh kosong"})
+        if (email == undefined || password == undefined) {
+            return res.status(401).json({ message: "Email atau Password tidak boleh kosong" })
         }
-        const user = await userService.getUserByEmail(email);
-        if(user){
-            const isMatch = await bcrypt.compare(password, user.password);
-            if(isMatch){
-                const token = jwt.sign({email}, <Secret>secret, {expiresIn: '1h'})
-                return res.status(200).json({"user" :{
-                    "name" : user.name,
-                    "email" : user.email,
-                    "createdAt" : user.createdAt,
-                    "updatedAt" : user.updatedAt,
-                },token})
+        let user = await userService.getUserByEmail(email);
+        if (user) {
+            if (!user.password) {
+                return next(new Error("CREDENTIAL_CORRUPT"))
+            }
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (isMatch) {
+                const token = jwt.sign({ email }, <Secret>secret, { expiresIn: '1h' })
+                return res.status(200).json({
+                    "user": {
+                        "name": user.name,
+                        "email": user.email,
+                        "createdAt": user.createdAt,
+                        "updatedAt": user.updatedAt,
+                    }, token
+                })
             } else {
-                return res.status(401).json({message: "Password salah"})
+                return res.status(401).json({ message: "Password salah" })
             }
         } else {
-            res.status(401).json({message: "User tidak ditemukan"})
+            res.status(401).json({ message: "User tidak ditemukan" })
         }
         return res.status(201).json(user);
     } catch (error) {
-        return res.status(500).json({error :"Error"})
+        return res.status(500).json({ error: "Error" })
     }
 }
-const adminLoginSession = async (req: Request, res: Response) => {
-    const {email, password} = req.body;
+const adminLoginSession = async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
     try {
         const user = await userService.getUserByEmail(email);
-        if(!user){
+        if (!user) {
             req.flash('alertMessage', 'User or Password is not correct');
             req.flash('alertStatus', 'danger');
             return res.redirect('/admin/signin');
         }
-        if(user){
+        if (user) {
+            if (!user.password) {
+                return next(new Error("CREDENTIAL_CORRUPT"))
+            }
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-            req.flash('alertMessage', 'User or Password is not correct');
-            req.flash('alertStatus', 'danger');
-            return res.redirect('/admin/signin');
+                req.flash('alertMessage', 'User or Password is not correct');
+                req.flash('alertStatus', 'danger');
+                return res.redirect('/admin/signin');
             }
             // console.log("cek user", user)
             req.flash('alertMessage', 'Successfully login');
             req.flash('alertStatus', 'success');
-            
+
             req.session.user = {
                 id: user.id,
                 email: user.email,
@@ -100,7 +107,7 @@ const viewDashboard = async (req: Request, res: Response) => {
         const alertMessage = req.flash("alertMessage");
         const alertStatus = req.flash("alertStatus");
         const alert = { message: alertMessage, status: alertStatus };
-        return res.render('pages/dashboard', {layout: 'layouts/main-layout', title:'Dashboard', alert})
+        return res.render('pages/dashboard', { layout: 'layouts/main-layout', title: 'Dashboard', alert })
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -112,7 +119,7 @@ const viewProject = async (req: Request, res: Response) => {
         const alertMessage = req.flash("alertMessage");
         const alertStatus = req.flash("alertStatus");
         const alert = { message: alertMessage, status: alertStatus };
-        return res.render('pages/project/index', {layout: 'layouts/main-layout', title:'Project', alert})
+        return res.render('pages/project/index', { layout: 'layouts/main-layout', title: 'Project', alert })
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -141,11 +148,11 @@ const updateUser = async (req: Request, res: Response) => {
     try {
         let userId = parseInt(req.params.id)
         const { name, email, password } = req.body;
-        const user = await userService.getUser(userId);
+        const user = await userService.getUserById(userId);
         if (user) {
             // const hashPwd = await bcrypt.hash(password, 10);
-            const updateUser = await userService.updateUser(userId, name, email, password);
-            return res.status(200).json(updateUser);
+            // const updateUser = await userService.updateUser(userId, name, email, password);
+            // return res.status(200).json(updateUser);
         } else {
             return res.status(404).json({ message: "User tidak ditemukan" });
         }
@@ -155,17 +162,17 @@ const updateUser = async (req: Request, res: Response) => {
     }
 }
 
-const deleteUser = async (req:Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response) => {
     try {
         let userId = parseInt(req.params.id)
-        const user = await userService.getUser(userId);
+        const user = await userService.getUserById(userId);
         if (user) {
-            const deleteUser = await userService.deleteUser(userId);
-            return res.status(200).json({ message: "User berhasil dihapus", deleteUser });
+            // const deleteUser = await userService.deleteUser(userId);
+            // return res.status(200).json({ message: "User berhasil dihapus", deleteUser });
         }
     } catch (error) {
         console.log("Error :", error)
-        return res.status(500).json({error: "Internal Server Error"})
+        return res.status(500).json({ error: "Internal Server Error" })
     }
 }
 

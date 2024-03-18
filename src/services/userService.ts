@@ -7,7 +7,7 @@ import User from "../models/userModel";
 // const prisma = new PrismaClient(); 
 
 export interface CreateUserError extends Error {
-    statusCode? : number;
+    statusCode?: number;
 }
 
 // const createUser = async (name: string, email:string, password:string) => {
@@ -26,25 +26,18 @@ export interface CreateUserError extends Error {
 //         return error
 //     }
 // }
+export async function createUser(user: User): Promise<User> {
+    let params = {
+        ...user
+    }
+    let res = await db.query('INSERT INTO user SET ?', params);
+    return res
+}
 
-// const getUserByEmail = async (email: string) => {
-//     try {
-//         const findUser = await prisma.user.findUnique({
-//             where: {
-//                  email
-//             }
-//         })
-//         return findUser
-//     } catch (error) {
-//         console.log("Error", error)
-//         error
-//     }
-// }
-
-export async function getUserByEmail(email:string): Promise<User | null> {
+export async function getUserByEmail(email: string): Promise<User | null> {
     let findUser = await db.query('SELECT * FROM user WHERE email = ? ', [email]);
     // console.log(findUser); 
-    if(findUser.rowCount === 0){
+    if (findUser.rowCount === 0) {
         return null
     } else {
         return findUser[0];
@@ -60,9 +53,9 @@ export async function getUserByEmail(email:string): Promise<User | null> {
 //         error
 //     }
 // }
-export async function getUser(id:number | string): Promise<User | null> {
+export async function getUserById(id: number | string): Promise<User | null> {
     let findUser = await db.query('SELECT * FROM user WHERE id = ? ', [id]);
-    if(findUser.rowCount === 0){
+    if (findUser.rowCount === 0) {
         return null
     } else {
         return findUser[0]
@@ -95,7 +88,7 @@ export async function getUser(id:number | string): Promise<User | null> {
 //                 }
 //             })
 //             //return data only selected fields
-            
+
 //             return updateUser
 //         } else {
 //             throw new Error("User not found")
@@ -153,12 +146,17 @@ export async function getUser(id:number | string): Promise<User | null> {
 //         error
 //     }
 // }
-
-// export {
-//     createUser,
-//     getUserByEmail,
-//     getUser,
-//     updateUser,
-//     deleteUser,
-//     getAllUser
-// }
+export async function getAllUser(): Promise<User[]> {
+    let findUser = await db.query('SELECT * FROM user');
+    return findUser.map((el: any) => {
+        return User.desentizedUser(el)
+    })
+}
+export default {
+    //     createUser,
+    getUserByEmail,
+    getUserById,
+    //     updateUser,
+    //     deleteUser,
+    getAllUser
+}

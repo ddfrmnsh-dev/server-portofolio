@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import jwt, {Secret} from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 
 import authMiddleware from "../middleware/authMiddleware";
 import * as adminController from '../controllers/adminController'
@@ -18,7 +18,7 @@ const router = express.Router()
 // router.get('/project', adminController.viewProject);
 
 // router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
-// router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);
+router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);
 // router.put('/updateUser/:id', authMiddleware.isAuthenticated, adminController.updateUser);
 // router.delete('/deleteUser/:id', authMiddleware.isAuthenticated, adminController.deleteUser);
 
