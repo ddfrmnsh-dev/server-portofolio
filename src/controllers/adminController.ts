@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import * as userService from "../services/userService";
+import * as projectService from "../services/projectService";
 import bcrypt from "bcrypt";
 import jwt, {Secret} from 'jsonwebtoken';
+import slug from "slug";
 import { User } from "@prisma/client";
+import moment from "moment";
 
 let secret = process.env.TOKEN_SECRET
 
@@ -169,6 +172,33 @@ const deleteUser = async (req:Request, res: Response) => {
     }
 }
 
+const createProject = async (req: Request, res: Response) => {
+    try {
+        const { name, description, link } = req.body;
+
+        if(!req.file){
+            throw new Error("File tidak ditemukan")
+        }
+        
+        let newImg = req.file.destination + "/" + req.file.filename;
+        let slugs = slug(name)
+        let params = {
+            name,
+            description,
+            image: newImg,
+            link,
+            slugs
+        }
+        const project = await projectService.createProject(params);
+
+        return res.status(200).json(project);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
 export {
     adminLogin,
     viewDashboard,
@@ -179,5 +209,6 @@ export {
     viewSignin,
     adminLoginSession,
     adminLogout,
-    viewProject
+    viewProject,
+    createProject
 }
