@@ -34,7 +34,7 @@ app.set('view engine', 'ejs')
 //   res.status(401).send('Unauthorized');
 // });
 router.get('/', function tesRoute(req: Request, res: Response) {
-    return res.redirect('/admin')
+    return res.redirect('/admin/signin')
 })
 app.use(router)
 app.use('/admin',adminRouter)
