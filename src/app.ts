@@ -1,4 +1,4 @@
-import express, {Request, Response} from "express";
+import express, { Request, Response } from "express";
 import userRouter from "./routes/userRoutes";
 import adminRouter from './routes/adminRoutes'
 import cors from 'cors';
@@ -7,13 +7,13 @@ import ejsLayout from 'express-ejs-layouts';
 import flash from "connect-flash";
 import session from 'express-session';
 import cookieParser from "cookie-parser";
-
+import methodOvveride from 'method-override';
 const app = express()
 const router = express.Router()
 
 // Middleware untuk mengaktifkan CORS
 app.use(cors());
-
+app.use(methodOvveride('_method'))
 // Middleware untuk parsing body dari request
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,10 +33,10 @@ app.set('view engine', 'ejs')
 //   res.status(401).send('Unauthorized');
 // });
 router.get('/', function tesRoute(req: Request, res: Response) {
-    return res.redirect('/admin')
+  return res.redirect('/admin')
 })
 app.use(router)
-app.use('/admin',adminRouter)
+app.use('/admin', adminRouter)
 app.use(userRouter)
 
 export default app

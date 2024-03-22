@@ -26,7 +26,7 @@ model Project {
   id            Int      @id @default(autoincrement())
   name          String
   slug          String
-  description   String
+  description   String   @db.Text
   link          String?
   path_img      String
   createdAt     DateTime @default(now())
