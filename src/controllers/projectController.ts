@@ -23,10 +23,15 @@ const createProject = async (req: Request, res: Response) => {
         const { name, description, link } = req.body;
 
         if (!req.file) {
-            throw new Error("File tidak ditemukan")
+            // throw new Error("File tidak ditemukan")
+            req.flash('alertMessage', 'Failed to upload image is mandatory');
+            req.flash('alertTitle', 'Failed');
+            req.flash('alertStatus', 'red');
+            return res.redirect('/admin/project');
         }
 
-        let newImg = req.file.destination + "/" + req.file.filename;
+        console.log("data", req.file)
+        let newImg = `images/${req.file.filename}`;
         let slugs = slug(name)
         let params: any = {
             name: name,

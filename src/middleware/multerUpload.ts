@@ -1,4 +1,4 @@
-import multer from'multer';
+import multer from 'multer';
 import fs from 'fs';
 import moment from 'moment';
 
@@ -14,19 +14,19 @@ import moment from 'moment';
 //     }
 // })
 // const upload = multer({})
-const upload = (folderName:any) =>{
+const upload = (folderName: any) => {
     return multer({
         storage: multer.diskStorage({
             destination: function (req, file, cb) {
-            const path = `./public/uploads/${folderName}`
-            fs.mkdirSync(path, { recursive: true })
-            cb(null, path)
+                const path = `public/${folderName}`
+                fs.mkdirSync(path, { recursive: true })
+                cb(null, path)
             },
             filename: function (req, file, cb) {
-            cb(null, file.fieldname + "-" + moment().format('DMMYY') + "_" + file.originalname)
+                cb(null, file.fieldname + "-" + moment().format('DMMYY') + "_" + file.originalname)
             }
         })
-      })
+    })
 }
 
 export default upload;

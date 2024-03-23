@@ -57,6 +57,7 @@ const adminLogin = async (req: Request, res: Response) => {
         return res.status(500).json({ error: "Error" })
     }
 }
+
 const adminLoginSession = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
@@ -68,15 +69,11 @@ const adminLoginSession = async (req: Request, res: Response) => {
         }
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
-            console.log("cek user", isMatch)
             if (!isMatch) {
                 req.flash('alertMessage', 'User or Password is not correct');
                 req.flash('alertStatus', 'danger');
                 return res.redirect('/admin/signin');
             }
-            // console.log("cek user", user)
-            req.flash('alertMessage', 'Successfully login');
-            req.flash('alertStatus', 'success');
 
             req.session.user = {
                 id: user.id,
@@ -84,14 +81,15 @@ const adminLoginSession = async (req: Request, res: Response) => {
             }
         }
         req.flash('alertMessage', 'Successfully login');
-        req.flash('alertStatus', 'success');
+        req.flash('alertTitle', 'Success');
+        req.flash('alertStatus', 'green');
         return res.redirect('/admin/dashboard');
     } catch (error) {
-        console.log("cek error sessio", error)
-        // return res.status(500).json({error :"Error"})
+        console.error(error);
         return res.redirect('/admin/signin');
     }
 }
+
 const adminLogout = async (req: Request, res: Response) => {
     try {
         req.session.destroy();
@@ -105,7 +103,8 @@ const viewDashboard = async (req: Request, res: Response) => {
     try {
         const alertMessage = req.flash("alertMessage");
         const alertStatus = req.flash("alertStatus");
-        const alert = { message: alertMessage, status: alertStatus };
+        const alertTitle = req.flash("alertTitle");
+        const alert = { message: alertMessage, status: alertStatus, title: alertTitle };
         return res.render('pages/dashboard', { layout: 'layouts/main-layout', title: 'Dashboard', alert })
     } catch (error) {
         console.error(error);
