@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import * as projectService from "../services/projectService";
 import slug from "slug";
 import moment from "moment";
-
+import fs from 'fs-extra';
+import path from 'path';
 const viewProject = async (req: Request, res: Response) => {
     try {
         const alertMessage = req.flash("alertMessage");
@@ -56,20 +57,29 @@ const createProject = async (req: Request, res: Response) => {
 const editProject = async (req: Request, res: Response) => {
     try {
         const { id, name, description, link } = req.body;
-        if (!req.file) {
-            throw new Error("File tidak ditemukan")
+        if (req.file == undefined) {
+            let slugs = slug(name)
+            let params: any = {
+                id: id,
+                name: name,
+                description: description,
+                link: link,
+                slug: slugs
+            }
+            const project = await projectService.updateProject(params);
+        } else {
+            let newImg = req.file.destination + "/" + req.file.filename;
+            let slugs = slug(name)
+            let params: any = {
+                id: id,
+                name: name,
+                description: description,
+                image: newImg,
+                link: link,
+                slug: slugs
+            }
+            const project = await projectService.updateProject(params);
         }
-        let newImg = req.file.destination + "/" + req.file.filename;
-        let slugs = slug(name)
-        let params: any = {
-            id: id,
-            name: name,
-            description: description,
-            image: newImg,
-            link: link,
-            slug: slugs
-        }
-        const project = await projectService.updateProject(params);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -83,8 +93,9 @@ const deleteProject = async (req: Request, res: Response) => {
             throw new Error("Id tidak ditemukan")
         }
         let params = parseInt(id);
-        const project = await projectService.deleteProject(params);
-        console.log("data", project)
+        const item = await projectService.getProjectById(params);
+        // const project = await projectService.deleteProject(params);
+        console.log("data", item)
         req.flash('alertMessage', 'Successfully delete project');
         req.flash('alertTitle', 'Delete');
         req.flash('alertStatus', 'red');
