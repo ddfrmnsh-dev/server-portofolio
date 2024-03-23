@@ -4,6 +4,7 @@ import slug from "slug";
 import moment from "moment";
 import fs from 'fs-extra';
 import path from 'path';
+import { Project } from "@prisma/client";
 const viewProject = async (req: Request, res: Response) => {
     try {
         const alertMessage = req.flash("alertMessage");
@@ -55,8 +56,9 @@ const createProject = async (req: Request, res: Response) => {
 }
 
 const editProject = async (req: Request, res: Response) => {
+    const { id, name, description, link } = req.body;
     try {
-        const { id, name, description, link } = req.body;
+        const project = await projectService.getProjectById(id);
         if (req.file == undefined) {
             let slugs = slug(name)
             let params: any = {
@@ -66,9 +68,12 @@ const editProject = async (req: Request, res: Response) => {
                 link: link,
                 slug: slugs
             }
-            const project = await projectService.updateProject(params);
+            await projectService.updateProject(params);
+            req.flash('alertMessage', 'Successfully update project without image');
+            req.flash('alertTitle', 'Success');
+            req.flash('alertStatus', 'green');
         } else {
-            let newImg = req.file.destination + "/" + req.file.filename;
+            let newImg = `images/${req.file.filename}`;
             let slugs = slug(name)
             let params: any = {
                 id: id,
@@ -78,8 +83,12 @@ const editProject = async (req: Request, res: Response) => {
                 link: link,
                 slug: slugs
             }
-            const project = await projectService.updateProject(params);
+            await projectService.updateProject(params);
+            req.flash('alertMessage', 'Successfully update project');
+            req.flash('alertTitle', 'Success');
+            req.flash('alertStatus', 'red');
         }
+        return res.redirect('/admin/project');
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -93,9 +102,15 @@ const deleteProject = async (req: Request, res: Response) => {
             throw new Error("Id tidak ditemukan")
         }
         let params = parseInt(id);
-        const item = await projectService.getProjectById(params);
-        // const project = await projectService.deleteProject(params);
-        console.log("data", item)
+        const item: any = await projectService.getProjectById(params);
+
+        await fs.unlink(path.join(`public/${item.path_img}`), (err) => {
+            if (err) {
+                throw new Error("Failed to delete image")
+            }
+        })
+
+        await projectService.deleteProject(params);
         req.flash('alertMessage', 'Successfully delete project');
         req.flash('alertTitle', 'Delete');
         req.flash('alertStatus', 'red');
