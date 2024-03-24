@@ -8,6 +8,7 @@
     <div class="relative overflow-x-auto p-2 ">
       <table
         class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+        id="dataTable"
       >
         <thead
           class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
@@ -41,7 +42,13 @@
             <td class="px-6 py-4"><%= datas.link  %></td>
             <td class="px-6 py-4 flex flex-row items-center">
               <form action="/admin/project/<%= datas.id %>?_method=DELETE" method="POST">
-                <a href="javascript:void();" type="button" class="bg-blue-500 mr-2 p-2 rounded-md text-white hover:bg-blue-400">Edit</a>
+                <a href="#" id="editButton" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" type="button" class="editButton bg-blue-500 mr-2 p-2 rounded-md text-white hover:bg-blue-400"
+                  data-id="<%= datas.id %>"
+                  data-name="<%= datas.name %>"
+                  data-slug="<%= datas.slug %>"
+                  data-description="<%= datas.description %>"
+                  data-link="<%= datas.link %>"
+                >Edit</a>
                 <button type="submit" class="bg-red-500 p-2 rounded-md text-white hover:bg-red-400">Delete</button>
               </form>
             </td>    
@@ -53,3 +60,30 @@
     </div>
   </div>
 </div>
+  <%- include('addModal.ejs'); %> 
+  <%- include('updateModal.ejs'); %>
+  <%- include('../../partials/js.ejs') %>
+
+  <script>
+    document.getElementById('dataTable').addEventListener('click', function(event) {
+    if (event.target.classList.contains('editButton')) {
+        // Dapatkan nilai data dari elemen yang diklik
+        event.preventDefault();
+        let name = event.target.dataset.name;
+        let link = event.target.dataset.link;
+        let description = event.target.dataset.description;
+
+        // Tampilkan modal edit
+        let editModal = document.getElementById('updateProductModal');
+
+        // editModal.querySelector('.id').value = id;
+        editModal.querySelector('.name').value = name;
+        editModal.querySelector('.link').value = link;
+        editModal.querySelector('.description').value = description;
+
+        editModal.classList.remove('hidden');
+
+    }
+});
+
+</script>
