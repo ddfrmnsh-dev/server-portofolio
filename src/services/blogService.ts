@@ -6,6 +6,10 @@ const prisma = new PrismaClient();
 const createPost = async (params: any) => {
   try {
     //create category in post
+    // const categories = params.categories.map((category: any) => category.name);
+    // console.log(categories); // Output: ['category1', 'category2', 'category3']
+    const categories = Array.isArray(params.categories) ? params.categories : [params.categories];
+    // console.log("params", params.categories.name)
     const post = await prisma.post.create({
       data: {
         authorId: params.authorId,
@@ -15,12 +19,10 @@ const createPost = async (params: any) => {
         path_img: params.path_img,
         published: params.published,
         categories: {
-          create: [
-            {
-              name: params.category,
-              slug: params.categorySlug,
-            },
-          ],
+          create: categories.map((category: any) => ({
+            name: category.name,
+            slug: category.slug,
+          })),
         },
       },
     });
@@ -31,10 +33,11 @@ const createPost = async (params: any) => {
   }
 };
 
-const checkSlug = async (slug: string) => {
+const checkSlug = async (slug: string, id?: number) => {
   try {
     // const post = await prisma.post.findUnique({
     //   where: {
+    //     id,
     //     slug,
     //   },
     // });
@@ -45,4 +48,29 @@ const checkSlug = async (slug: string) => {
   }
 };
 
-export { createPost, checkSlug };
+const getAllPost = async () => {
+  try {
+    const post = await prisma.post.findMany({
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        content: true,
+        path_img: true,
+        published: true,
+        categories: {
+          select: {
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    });
+
+    return post;
+  } catch (error) {
+    console.log("Error", error);
+  }
+}
+
+export { createPost, checkSlug, getAllPost };
