@@ -21,6 +21,7 @@ router.get('/dashboard', adminController.viewDashboard);
 
 //route-project
 router.get('/project', projectController.viewProject);
+router.put('/project', upload('images').single('img'), projectController.updateProject);
 router.delete('/project/:id', projectController.deleteProject);
 router.post('/project', upload('images').single('img'), projectController.createProject);
 // router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);

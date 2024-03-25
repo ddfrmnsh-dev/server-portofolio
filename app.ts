@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import userRouter from "./src/routes/userRoutes";
 import adminRouter from './src/routes/adminRoutes'
+import apiRouter from './src/routes/apiRoutes'
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import ejsLayout from 'express-ejs-layouts';
@@ -31,9 +32,14 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser())
+app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.static(path.join(__dirname, "public")))
+app.use(
+  "/tinymce",
+  express.static(path.join(__dirname, "node_modules/tinymce"))
+);
 // app.use(express.static(__dirname + "public"));
 // app.use('/', express.static('public'))
 // var dir = path.join(__dirname, 'public');
@@ -45,6 +51,7 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use(router)
 app.use('/admin', adminRouter)
 app.use(userRouter)
+app.use('/api', apiRouter)
 router.get('/', function tesRoute(req: Request, res: Response) {
   return res.redirect('/admin')
 })

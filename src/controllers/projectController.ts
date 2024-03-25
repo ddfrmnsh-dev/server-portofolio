@@ -1,10 +1,40 @@
 import { Request, Response } from "express";
 import * as projectService from "../services/projectService";
 import slug from "slug";
-import moment from "moment";
 import fs from 'fs-extra';
 import path from 'path';
+import sanitizeHtml from "sanitize-html";
 import { Project } from "@prisma/client";
+
+const getAllProject = async (req: Request, res: Response) => {
+  try {
+    const projects = await projectService.getAllProject();
+
+    if (!projects) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // if (projects instanceof Array) {
+    //     projects.map((val, idx, []) => { 
+    //         val.description = sanitizeHtml(val.description, {
+    //             allowedTags: [],
+    //             allowedAttributes: {},
+    //         });
+    //     });
+    // }
+
+    // console.log("cek data", projects);
+
+    return res.json({
+      message: "success",
+      data: projects,
+    });
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
+
 const viewProject = async (req: Request, res: Response) => {
     try {
         const alertMessage = req.flash("alertMessage");
@@ -13,6 +43,19 @@ const viewProject = async (req: Request, res: Response) => {
         const alert = { message: alertMessage, status: alertStatus, title: alertTitle };
 
         const getProject = await projectService.getAllProject();
+        if (!getProject) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        if (getProject instanceof Array) {
+            getProject.map((val, idx, []) => {
+                val.description = sanitizeHtml(val.description, {
+                    allowedTags: [],
+                    allowedAttributes: {},
+                });
+            });
+        }
+        
         return res.render('pages/project/index', { layout: 'layouts/main-layout', title: 'Project', alert, data: getProject })
     } catch (error) {
         console.error(error);
@@ -55,45 +98,51 @@ const createProject = async (req: Request, res: Response) => {
     }
 }
 
-const editProject = async (req: Request, res: Response) => {
-    const { id, name, description, link } = req.body;
-    try {
-        const project = await projectService.getProjectById(id);
-        if (req.file == undefined) {
-            let slugs = slug(name)
-            let params: any = {
-                id: id,
-                name: name,
-                description: description,
-                link: link,
-                slug: slugs
-            }
-            await projectService.updateProject(params);
-            req.flash('alertMessage', 'Successfully update project without image');
-            req.flash('alertTitle', 'Success');
-            req.flash('alertStatus', 'green');
-        } else {
-            let newImg = `images/${req.file.filename}`;
-            let slugs = slug(name)
-            let params: any = {
-                id: id,
-                name: name,
-                description: description,
-                image: newImg,
-                link: link,
-                slug: slugs
-            }
-            await projectService.updateProject(params);
-            req.flash('alertMessage', 'Successfully update project');
-            req.flash('alertTitle', 'Success');
-            req.flash('alertStatus', 'red');
-        }
-        return res.redirect('/admin/project');
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Internal Server Error" });
+const updateProject = async (req: Request, res: Response) => {
+  const { id, name, description, link } = req.body;
+  let ids = parseInt(id);
+  try {
+    const project: any = await projectService.getProjectById(ids);
+    if (req.file == undefined) {
+      let slugs = slug(name);
+      let params: any = {
+        id: ids,
+        name: name,
+        description: description,
+        link: link,
+        slug: slugs,
+      };
+      await projectService.updateProject(params);
+      req.flash("alertMessage", "Successfully update project without image");
+      req.flash("alertTitle", "Success");
+      req.flash("alertStatus", "green");
+    } else {
+      await fs.unlink(path.join(`public/${project.path_img}`));
+      let newImg = `images/${req.file.filename}`;
+      let slugs = slug(name);
+      let params: any = {
+        id: ids,
+        name: name,
+        description: description,
+        image: newImg,
+        link: link,
+        slug: slugs,
+      };
+      await projectService.updateProject(params);
+      req.flash("alertMessage", "Successfully update project");
+      req.flash("alertTitle", "Success");
+      req.flash("alertStatus", "green");
     }
-}
+    return res.redirect("/admin/project");
+} catch (error: any) {
+    req.flash("alertMessage", error.message);
+    req.flash("alertTitle", "Failed");
+    req.flash("alertStatus", "red");
+    console.error(error);
+    res.redirect("/admin/project");
+    // return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const deleteProject = async (req: Request, res: Response) => {
     try {
@@ -124,6 +173,7 @@ const deleteProject = async (req: Request, res: Response) => {
 export {
     viewProject,
     createProject,
-    editProject,
-    deleteProject
+    updateProject,
+    deleteProject,
+    getAllProject
 }
