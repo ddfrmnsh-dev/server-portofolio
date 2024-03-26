@@ -2,7 +2,7 @@
   class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-auto mb-4"
 >
     <div class="flex flex-col items-end justify-end p-2">
-        <button data-modal-target="addProductModal" data-modal-toggle="addProductModal"  id="updateProductButton" class=" hover:bg-gray-500 p-2 rounded-lg bg-gray-600 text-white text-sm">Add New Project</button>
+        <button data-modal-target="addBlogModal" data-modal-toggle="addBlogModal"  id="updateProductButton" class=" hover:bg-gray-500 p-2 rounded-lg bg-gray-600 text-white text-sm">Add New Article</button>
     </div>
     <!-- Modal toggle -->
     <div class="relative overflow-x-auto p-2 ">
@@ -36,10 +36,11 @@
               scope="row"
               class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
             >
-              <%= datas.name  %>
+              <%= datas.title  %>
             </th> 
             <td class="px-6 py-4"><%= datas.slug  %></td>
-            <td class="px-6 py-4"><%= datas.description  %></td>
+            <td class="px-6 py-4"><%= datas.content  %></td>
+            <td class="px-6 py-4"><%= datas.published  %></td>
             <td class="px-6 py-4"><%= datas.link  %></td>
             <td class="px-6 py-4 flex flex-row items-center">
               <form action="/admin/project/<%= datas.id %>?_method=DELETE" method="POST">
@@ -70,7 +71,7 @@
     if (event.target.classList.contains('editButton')) {
         // Dapatkan nilai data dari elemen yang diklik
         event.preventDefault();
-        let id = event.target.dataset.id;
+        // let id = event.target.dataset.id;
         let name = event.target.dataset.name;
         let link = event.target.dataset.link;
         let description = event.target.dataset.description;
@@ -78,7 +79,7 @@
         // Tampilkan modal edit
         let editModal = document.getElementById('updateProductModal');
 
-        editModal.querySelector('.id').value = id;
+        // editModal.querySelector('.id').value = id;
         editModal.querySelector('.name').value = name;
         editModal.querySelector('.link').value = link;
         editModal.querySelector('.description').value = description;
