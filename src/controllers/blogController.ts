@@ -40,7 +40,7 @@ const createBlog = async (req: Request, res: Response) => {
     const slugTitle = slug(title);
     const newImg = `images/${req.file.filename}`;
     const checkSlug = await blogService.checkSlug(slugTitle);
-
+    const checkCategory = await blogService.findOrCreateCategories(category);
     if (checkSlug) {
       return res.status(400).json({ message: "Slug telah digunakan" });
     }
@@ -53,7 +53,7 @@ const createBlog = async (req: Request, res: Response) => {
       path_img: newImg,
       content: content,
       published: false,
-      categories: category,
+      categories: checkCategory,
     };
 
     const project = await blogService.createPost(params);

@@ -19,10 +19,11 @@ const createPost = async (params: any) => {
         path_img: params.path_img,
         published: params.published,
         categories: {
-          create: categories.map((category: any) => ({
-            name: category.name,
-            slug: category.slug,
-          })),
+          // create: categories.map((category: any) => ({
+          //   name: category.name,
+          //   slug: category.slug,
+          // })),
+          connect: categories.map((id: number) => ({ id })),
         },
       },
     });
@@ -73,4 +74,32 @@ const getAllPost = async () => {
   }
 }
 
-export { createPost, checkSlug, getAllPost };
+const findOrCreateCategories = async (categories: any[]) => {
+  const categoryIds = await Promise.all(categories.map(async (category: any) => {
+    const existingCategory = await prisma.category.findFirst({
+      where: {
+        name: category.name,
+        slug: category.slug,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingCategory) {
+      return existingCategory.id;
+    } else {
+      const newCategory = await prisma.category.create({
+        data: {
+          name: category.name,
+          slug: category.slug,
+        },
+      });
+      return newCategory.id;
+    }
+  }));
+
+  return categoryIds;
+};
+
+export { createPost, checkSlug, getAllPost, findOrCreateCategories };
