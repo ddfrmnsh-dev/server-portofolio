@@ -9,5 +9,6 @@ const router = express.Router();
 router.get("/v1/project", projectController.getAllProject);
 router.post("/v1/blog", blogController.createBlog);
 router.get("/v1/blog", blogController.getAllBlog);
+router.put("/v1/updateBlog/:id", blogController.updateStatus);
 
 export default router;

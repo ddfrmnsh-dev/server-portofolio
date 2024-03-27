@@ -23,7 +23,20 @@ const createPost = async (params: any) => {
           //   name: category.name,
           //   slug: category.slug,
           // })),
-          connect: categories.map((id: number) => ({ id })),
+          // create: [
+          //   {
+          //     category: {
+          //       connect: {
+          //         id: categories.map((id: number) => ({ id })),
+          //       }
+          //     }
+          //   }
+          // ]
+          create: categories.map((categoryId: any) => ({
+            category: {
+              connect: { id: categoryId }
+            }
+          }))
         },
       },
     });
@@ -61,8 +74,13 @@ const getAllPost = async () => {
         published: true,
         categories: {
           select: {
-            name: true,
-            slug: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            }
           },
         },
       },
@@ -102,4 +120,38 @@ const findOrCreateCategories = async (categories: any[]) => {
   return categoryIds;
 };
 
-export { createPost, checkSlug, getAllPost, findOrCreateCategories };
+const updateStatus = async (id: number, status: boolean) => {
+  try {
+    const post = await prisma.post.update({
+      where: {
+        id,
+      },
+      data: {
+        published: status,
+      },
+    });
+    return post;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+}
+
+const findById = async (id: number) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        published: true,
+      }
+
+    })
+    return post;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+}
+export { findById, createPost, checkSlug, getAllPost, findOrCreateCategories, updateStatus };

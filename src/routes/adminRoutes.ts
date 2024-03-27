@@ -35,6 +35,7 @@ router.post(
 
 //route-blog
 router.get("/blog", blogController.viewBlog);
+router.put("/updateStatus/:id", blogController.updateStatus);
 router.post("/blog", upload("images").single("img"), blogController.createBlog);
 // router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
 // router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);

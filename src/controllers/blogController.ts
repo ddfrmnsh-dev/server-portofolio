@@ -41,6 +41,7 @@ const createBlog = async (req: Request, res: Response) => {
     const newImg = `images/${req.file.filename}`;
     const checkSlug = await blogService.checkSlug(slugTitle);
     const checkCategory = await blogService.findOrCreateCategories(category);
+    console.log("cek data", checkCategory);
     if (checkSlug) {
       return res.status(400).json({ message: "Slug telah digunakan" });
     }
@@ -101,6 +102,10 @@ const viewBlog = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
+    getBlog.map((val, idx, []) => {
+      val.content = val.content.substring(0, 150);
+    });
+
     if (getBlog instanceof Array) {
       getBlog.map((val, idx, []) => {
         val.content = sanitizeHtml(val.content, {
@@ -122,4 +127,27 @@ const viewBlog = async (req: Request, res: Response) => {
   }
 };
 
-export { createBlog, getAllBlog, viewBlog };
+const updateStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const parseId = parseInt(id);
+    const checkStatus: any = await blogService.findById(parseId);
+    if (!checkStatus) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+    // console.log("cek status 1", checkStatus);
+    const status = checkStatus.published;
+    // const newStatus = !status;
+    if (!status) {
+      await blogService.updateStatus(parseId, true);
+    } else {
+      await blogService.updateStatus(parseId, false);
+    }
+    // console.log("cek status 2", newStatus);
+    return res.redirect("/admin/blog");
+    // return res.status(404).json({ message: "success", newStatus });
+  } catch (e) {
+    return res.status(404).json({ message: "Blog not found" });
+  }
+}
+export { createBlog, getAllBlog, viewBlog, updateStatus };
