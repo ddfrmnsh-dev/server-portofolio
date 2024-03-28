@@ -7,19 +7,17 @@
     <!-- Modal toggle -->
     <div class="relative overflow-x-auto p-2 ">
       <table
-        class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+        class="table-fixed overflow-scroll w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
         id="dataTable"
       >
         <thead
           class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
         >
           <tr>
-            <th scope="col" class="px-6 py-3">No</th>
+            <th scope="col" class="px-6 py-3" style="width: 20px;">No</th>
             <th scope="col" class="px-6 py-3">Title</th>
-            <th scope="col" class="px-6 py-3">Slug</th>
-            <th scope="col" class="px-6 py-3">Content</th>
+            <th scope="col" class="px-6 py-3" style="width: 350px;">Content</th>
             <th scope="col" class="px-6 py-3">Status</th>
-            <th scope="col" class="px-6 py-3">Link</th>
             <th scope="col" class="px-6 py-3">Action</th>
           </tr>
         </thead>
@@ -34,26 +32,29 @@
             <td class="px-6 py-4"><%= index + 1 %></td>
             <th
               scope="row"
-              class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              class="px-6 py-4 font-medium text-gray-900 text-wrap dark:text-white"
             >
               <%= datas.title  %>
-            </th> 
-            <td class="px-6 py-4"><%= datas.slug  %></td>
+              <div class="font-extralight pt-2">
+                <%= datas.slug  %>
+              </div>
+            </th>
             <td class="px-6 py-4"><%= datas.content  %></td>
             <td class="px-6 py-4"><%= datas.published ? "published" : "not published"   %></td>
-            <td class="px-6 py-4"><%= datas.link%></td>
-            <td class="px-6 py-4 flex flex-row items-center">
-              <form action="/admin/blog/<%= datas.id %>?_method=DELETE" method="POST">
-                <a href="#" id="editButton" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" type="button" class="editButton bg-blue-500 mr-2 p-2 rounded-md text-white hover:bg-blue-400"
-                  data-id="<%= datas.id %>"
-                  data-name="<%= datas.name %>"
-                  data-slug="<%= datas.slug %>"
-                  data-description="<%= datas.description %>"
-                  data-link="<%= datas.link %>"
-                >Edit</a>
-                <a id="updateButton" data-id="<%= datas.id %>" class="button-update bg-yellow-500 p-2 rounded-md text-white hover:bg-yellow-400">Update</a>
-                <button type="submit" class="bg-red-500 p-2 rounded-md text-white hover:bg-red-400">Delete</button>
-              </form>
+            <td class="w-full ">
+              <div class="flex flex-row items-center">
+                <form action="/admin/blog/<%= datas.id %>?_method=DELETE" method="POST">
+                  <a href="#" id="editButton" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" type="button" class="editButton bg-blue-500 p-2 rounded-md text-white hover:bg-blue-400"
+                    data-id="<%= datas.id %>"
+                    data-name="<%= datas.name %>"
+                    data-slug="<%= datas.slug %>"
+                    data-description="<%= datas.description %>"
+                    data-link="<%= datas.link %>"
+                  ><i class="fa-solid fa-pen-to-square" style="font-size: 20px;"></i></a>
+                  <a id="updateButton" data-id="<%= datas.id %>" class="button-update bg-yellow-500 p-2 rounded-md text-white hover:bg-yellow-400"><i class="fa-solid fa-circle-check" style="font-size: 20px;"></i></a>
+                  <button type="submit" class="bg-red-500 p-2 rounded-md text-white hover:bg-red-400"><i class="fa-solid fa-trash-can" style="font-size: 20px;"></i></button>
+                </form>
+              </div>
             </td>    
           </tr>
             <% }) %>
