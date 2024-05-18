@@ -33,7 +33,7 @@ const adminLogin = async (req: Request, res: Response) => {
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
-        const token = jwt.sign({ email }, <Secret>secret, { expiresIn: "1h" });
+        const token = jwt.sign({ email, user: user.name }, <Secret>secret, { expiresIn: "1h" });
         res.cookie("token", token, { httpOnly: true, maxAge: 3600000, secure: process.env.NODE_ENV === "production" });
       } else {
         req.flash("alertMessage", "User or Password is not correct");

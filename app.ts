@@ -59,7 +59,7 @@ app.use("/admin", adminRouter);
 app.use(userRouter);
 app.use("/api", apiRouter);
 router.get("/", function tesRoute(req: Request, res: Response) {
-  return res.redirect("/admin");
+  return res.redirect("/admin/signin");
 });
 // app.use(function (req, res, next) {
 //   next(createError(404));
