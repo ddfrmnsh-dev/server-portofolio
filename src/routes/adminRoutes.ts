@@ -13,33 +13,32 @@ dotenv.config();
 const router = express.Router();
 
 router.get("/signin", adminController.viewSignin);
-router.post("/signin", adminController.adminLoginSession);
-
-router.use(authMiddleware.isLogin);
+router.post("/signin", adminController.adminLogin);
 router.get("/logout", adminController.adminLogout);
-router.get("/dashboard", adminController.viewDashboard);
 
-//route-project
-router.get("/project", projectController.viewProject);
+router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
+
+/*
+Route-project
+*/
+router.get("/project", authMiddleware.isAuthenticated, projectController.viewProject);
 router.put(
-  "/project",
-  upload("images").single("img"),
-  projectController.updateProject
+    "/project",
+    upload("images").single("img"), authMiddleware.isAuthenticated,
+    projectController.updateProject
 );
 router.delete("/project/:id", projectController.deleteProject);
 router.post(
-  "/project",
-  upload("images").single("img"),
-  projectController.createProject
+    "/project",
+    upload("images").single("img"), authMiddleware.isAuthenticated,
+    projectController.createProject
 );
 
-//route-blog
-router.get("/blog", blogController.viewBlog);
-router.put("/updateStatus/:id", blogController.updateStatus);
-router.post("/blog", upload("images").single("img"), blogController.createBlog);
-// router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
-// router.get('/getAllUsers', authMiddleware.isAuthenticated, adminController.getAllUser);
-// router.put('/updateUser/:id', authMiddleware.isAuthenticated, adminController.updateUser);
-// router.delete('/deleteUser/:id', authMiddleware.isAuthenticated, adminController.deleteUser);
+/*
+Route-blog
+*/
+router.get("/blog", authMiddleware.isAuthenticated, blogController.viewBlog);
+router.post("/blog", upload("images").single("img"), authMiddleware.isAuthenticated, blogController.createBlog);
+router.put("/updateStatus/:id", authMiddleware.isAuthenticated, blogController.updateStatus);
 
 export default router;
