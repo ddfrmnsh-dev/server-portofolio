@@ -14,34 +14,62 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Post      Post[]
+  id            Int      @id @default(autoincrement())
+  name          String?
+  username      String?
+  email         String?   @unique
+  password      String
+  is_active     Boolean?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  post          Post[]
+  project       Project[]
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String
-  description String   @db.Text
-  link        String?
-  path_img    String?
+  id            Int       @id @default(autoincrement())
+  name          String?
+  slug          String?
+  description   String?   @db.Text
+  link_website  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        Int
+  author        User         @relation(fields: [userId], references: [id])
+  clientId      Int
+  client        Client       @relation(fields: [clientId], references: [id])
+  image         Image[]
+}
+
+model Image {
+  id            Int          @id @default(autoincrement())
+  name          String?
+  path_img      String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  projectId     Int
+  project       Project      @relation(fields: [projectId], references: [id])
+  postId        Int
+  post          Post      @relation(fields: [postId], references: [id])
+}
+
+model Client {
+  id          Int       @id @default(autoincrement())
+  name        String?
+  path_logo   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  project     Project[]
 }
 
 model Post {
   id         Int        @id @default(autoincrement())
-  title      String
-  content    String     @db.Text
-  slug       String
-  path_img   String
+  title      String?
+  content    String?    @db.Text
+  slug       String?
   published  Boolean    @default(false)
-  categories CategoryOnPost[] 
+  categories CategoryOnPost[]
+  image      Image[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   authorId   Int
