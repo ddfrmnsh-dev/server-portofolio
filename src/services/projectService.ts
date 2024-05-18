@@ -6,17 +6,15 @@ const prisma = new PrismaClient();
 const createProject = async (params: any) => {
     try {
         console.log("params", params.name)
-        const project = await prisma.project.create({
-            data: {
-                name: params.name,
-                slug: params.slug,
-                description: params.description,
-                path_img: params.image,
-                link: params.link || null
-            }
-        })
+        // const project = await prisma.project.create({
+        //     data: {
+        //         name: params.name,
+        //         slug: params.slug,
+        //         description: params.description
+        //     }
+        // })
 
-        return project
+        // return project
     } catch (error) {
         console.log("Error", error)
         return error
@@ -31,8 +29,6 @@ const getAllProject = async () => {
                 name: true,
                 slug: true,
                 description: true,
-                path_img: true,
-                link: true
             }
         })
         return project
@@ -66,8 +62,6 @@ const updateProject = async (params: any) => {
                 name: params.name,
                 slug: params.slug,
                 description: params.description,
-                path_img: params.image,
-                link: params.link || null
             }
         })
         return project

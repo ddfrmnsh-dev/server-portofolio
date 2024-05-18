@@ -3,10 +3,6 @@ import * as userService from "../services/userService";
 import * as projectService from "../services/projectService";
 import bcrypt from "bcrypt";
 import jwt, { Secret } from "jsonwebtoken";
-import slug from "slug";
-import { User } from "@prisma/client";
-import moment from "moment";
-
 let secret = process.env.TOKEN_SECRET;
 
 const viewSignin = (req: Request, res: Response) => {
@@ -14,14 +10,14 @@ const viewSignin = (req: Request, res: Response) => {
     const alertMessage = req.flash("alertMessage");
     const alertStatus = req.flash("alertStatus");
     const alert = { message: alertMessage, status: alertStatus };
-    if (req.session.user == null || req.session.user == undefined) {
+    const token = req.cookies.token;
+    if (!token) {
       res.render("index", { layout: "index", title: "Login", alert });
     } else {
       res.redirect("/admin/dashboard");
     }
-    // res.render('index', {layout:'index',title: 'Login'});
   } catch (error) {
-    res.redirect("/admin/signin");
+    return res.status(500).json({ error: "Error" });
   }
 };
 const adminLogin = async (req: Request, res: Response) => {
@@ -29,98 +25,50 @@ const adminLogin = async (req: Request, res: Response) => {
   console.log(email, password);
   try {
     if (email == undefined || password == undefined) {
-      return res
-        .status(401)
-        .json({ message: "Email atau Password tidak boleh kosong" });
+      req.flash("alertMessage", "User or Password is not empty");
+      req.flash("alertStatus", "danger");
+      return res.redirect("/admin/signin");
     }
     const user = await userService.getUserByEmail(email);
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         const token = jwt.sign({ email }, <Secret>secret, { expiresIn: "1h" });
-        return res.status(200).json({
-          user: {
-            name: user.name,
-            email: user.email,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-          token,
-        });
+        res.cookie("token", token, { httpOnly: true, maxAge: 3600000, secure: process.env.NODE_ENV === "production" });
       } else {
-        return res.status(401).json({ message: "Password salah" });
-      }
-    } else {
-      res.status(401).json({ message: "User tidak ditemukan" });
-    }
-    return res.status(201).json(user);
-  } catch (error) {
-    return res.status(500).json({ error: "Error" });
-  }
-};
-
-const adminLoginSession = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  try {
-    const user = await userService.getUserByEmail(email);
-    if (!user) {
-      req.flash("alertMessage", "User or Password is not correct");
-      req.flash("alertStatus", "danger");
-      return res.redirect("/admin/signin");
-    }
-    if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
         req.flash("alertMessage", "User or Password is not correct");
         req.flash("alertStatus", "danger");
         return res.redirect("/admin/signin");
       }
-
-      req.session.user = {
-        id: user.id,
-        email: user.email,
-      };
+    } else {
+      req.flash("alertMessage", "User or Password is not correct");
+      req.flash("alertStatus", "danger");
+      return res.redirect("/admin/signin");
     }
-
     req.flash("alertMessage", "Successfully login");
     req.flash("alertTitle", "Success");
     req.flash("alertStatus", "green");
     return res.redirect("/admin/dashboard");
   } catch (error) {
-    console.error(error);
-    return res.redirect("/admin/signin");
+    return res.status(500).json({ error: "Error" });
   }
 };
 
+
 const adminLogout = async (req: Request, res: Response) => {
   try {
-    req.session.destroy();
+    res.clearCookie("token", {
+      httpOnly: true,
+      maxAge: 3600000,
+      secure: process.env.NODE_ENV === "production"
+    });
     return res.redirect("/admin/signin");
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-const viewDashboard = async (req: Request, res: Response) => {
-  try {
-    const alertMessage = req.flash("alertMessage");
-    const alertStatus = req.flash("alertStatus");
-    const alertTitle = req.flash("alertTitle");
-    const alert = {
-      message: alertMessage,
-      status: alertStatus,
-      title: alertTitle,
-    };
-    return res.render("pages/dashboard", {
-      layout: "layouts/main-layout",
-      title: "Dashboard",
-      alert,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+
 
 const checkData = async (req: Request, res: Response) => {
   try {
@@ -146,7 +94,6 @@ const getAllUser = async (req: Request, res: Response) => {
   }
 };
 
-//create function update user get id by params
 const updateUser = async (req: Request, res: Response) => {
   try {
     let userId = parseInt(req.params.id);
@@ -188,12 +135,10 @@ const deleteUser = async (req: Request, res: Response) => {
 
 export {
   adminLogin,
-  viewDashboard,
   checkData,
   getAllUser,
   updateUser,
   deleteUser,
   viewSignin,
-  adminLoginSession,
   adminLogout,
 };

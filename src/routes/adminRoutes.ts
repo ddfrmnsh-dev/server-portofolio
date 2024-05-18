@@ -6,6 +6,7 @@ import authMiddleware from "../middleware/authMiddleware";
 import * as adminController from "../controllers/adminController";
 import * as projectController from "../controllers/projectController";
 import * as blogController from "../controllers/blogController";
+import * as dashboardController from "../controllers/dashboardController";
 import dotenv from "dotenv";
 import upload from "../middleware/multerUpload";
 dotenv.config();
@@ -16,7 +17,7 @@ router.get("/signin", adminController.viewSignin);
 router.post("/signin", adminController.adminLogin);
 router.get("/logout", adminController.adminLogout);
 
-router.get('/dashboard', authMiddleware.isAuthenticated, adminController.viewDashboard);
+router.get('/dashboard', authMiddleware.isAuthenticated, dashboardController.viewDashboard);
 
 /*
 Route-project

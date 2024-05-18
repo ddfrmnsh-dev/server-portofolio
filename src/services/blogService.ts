@@ -16,7 +16,6 @@ const createPost = async (params: any) => {
         title: params.title,
         slug: params.slug,
         content: params.content,
-        path_img: params.path_img,
         published: params.published,
         categories: {
           // create: categories.map((category: any) => ({
@@ -70,7 +69,6 @@ const getAllPost = async () => {
         title: true,
         slug: true,
         content: true,
-        path_img: true,
         published: true,
         categories: {
           select: {

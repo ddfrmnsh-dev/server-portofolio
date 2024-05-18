@@ -21,6 +21,7 @@ app.set("views", "./views");
 app.set("view engine", "ejs");
 app.use(methodOvveride("_method"));
 // Middleware untuk parsing body dari request
+app.use(cookieParser());
 app.use(flash());
 app.use(ejsLayout);
 app.use(
@@ -33,7 +34,6 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, "public")));
 

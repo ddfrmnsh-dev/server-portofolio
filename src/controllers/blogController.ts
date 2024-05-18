@@ -51,7 +51,6 @@ const createBlog = async (req: Request, res: Response) => {
       title: title,
       slug: slugTitle,
       description: description,
-      path_img: newImg,
       content: content,
       published: false,
       categories: checkCategory,
@@ -102,18 +101,18 @@ const viewBlog = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    getBlog.map((val, idx, []) => {
-      val.content = val.content.substring(0, 150);
-    });
+    // getBlog.map((val, idx, []) => {
+    //   val.content = val.content.substring(0, 150);
+    // });
 
-    if (getBlog instanceof Array) {
-      getBlog.map((val, idx, []) => {
-        val.content = sanitizeHtml(val.content, {
-          allowedTags: [],
-          allowedAttributes: {},
-        });
-      });
-    }
+    // if (getBlog instanceof Array) {
+    //   getBlog.map((val, idx, []) => {
+    //     val.content = sanitizeHtml(val.content, {
+    //       allowedTags: [],
+    //       allowedAttributes: {},
+    //     });
+    //   });
+    // }
 
     return res.render("pages/blog/index", {
       layout: "layouts/main-layout",

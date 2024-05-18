@@ -92,7 +92,6 @@ const createProject = async (req: Request, res: Response) => {
       name: name,
       description: description,
       image: newImg,
-      link: link,
       slug: slugs,
     };
     const project = await projectService.createProject(params);
