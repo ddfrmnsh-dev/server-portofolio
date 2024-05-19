@@ -1,0 +1,79 @@
+<div
+  class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-auto mb-4"
+>
+    <div class="flex flex-col items-end justify-end p-2">
+        <button data-modal-target="addProductModal" data-modal-toggle="addProductModal"  id="updateProductButton" class=" hover:bg-gray-500 p-2 rounded-lg bg-gray-600 text-white text-sm">Add New Client</button>
+    </div>
+    <!-- Modal toggle -->
+    <div class="relative overflow-x-auto p-2 ">
+      <table
+        class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+        id="dataTable"
+      >
+        <thead
+          class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+        >
+          <tr>
+            <th scope="col" class="px-6 py-3">No</th>
+            <th scope="col" class="px-6 py-3">Name</th>
+            <th scope="col" class="px-6 py-3">Logo</th>
+            <th scope="col" class="px-6 py-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (data.length === 0) { %>
+          <tr>
+            <td colspan="6" class="px-6 py-4 text-center">Tidak ada data yang tersedia.</td>
+          </tr>
+          <% } else { %>
+            <% data.forEach((datas, index) => { %>
+          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <td class="px-6 py-4"><%= index + 1 %></td>
+            <th
+              scope="row"
+              class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+            >
+              <%= datas.name  %>
+            </th> 
+            <td class="px-6 py-4"><%= datas.path_logo  %></td>
+            <td class="px-6 py-4 flex flex-row items-center">
+              <form action="/admin/client/<%= datas.id %>?_method=DELETE" method="POST">
+                <a href="#" id="editButton" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" type="button" class="editButton bg-blue-500 mr-2 p-2 rounded-md text-white hover:bg-blue-400"
+                  data-id="<%= datas.id %>"
+                  data-name="<%= datas.name %>"
+                >Edit</a>
+                <button type="submit" class="bg-red-500 p-2 rounded-md text-white hover:bg-red-400">Delete</button>
+              </form>
+            </td>    
+          </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+  <%- include('addModal.ejs'); %> 
+  <%- include('updateModal.ejs'); %>
+  <%- include('../../partials/js.ejs') %>
+
+  <script>
+    document.getElementById('dataTable').addEventListener('click', function(event) {
+    if (event.target.classList.contains('editButton')) {
+        // Dapatkan nilai data dari elemen yang diklik
+        event.preventDefault();
+        let id = event.target.dataset.id;
+        let name = event.target.dataset.name;
+
+        // Tampilkan modal edit
+        let editModal = document.getElementById('updateProductModal');
+
+        editModal.querySelector('.id').value = id;
+        editModal.querySelector('.name').value = name;
+
+        editModal.classList.remove('hidden');
+
+    }
+});
+
+</script>
