@@ -82,27 +82,27 @@
             <div>
               <label
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                for="default_size"
+                for="multiple_files"
                 >Upload Image</label
               >
               <input
-                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                id="default_size"
+                class="block w-full text-lg text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                id="multiple_files"
                 type="file"
                 name="img"
                 accept="image/png, image/gif, image/jpeg"
+                multiple
               />
             </div>
-            <!-- <div>
-                        <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                        <select id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                            <option selected="">Electronics</option>
-                            <option value="TV">TV/Monitors</option>
-                            <option value="PC">PC</option>
-                            <option value="GA">Gaming/Console</option>
-                            <option value="PH">Phones</option>
-                        </select>
-                    </div> -->
+            <div>
+              <label for="client" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client</label>
+              <select id="client" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                <option value="" selected disabled>Choose a Client</option>
+                <% dataClient.forEach((datas, index) => { %>
+                <option value="<%= datas.id  %>"><%= datas.name  %></option>
+                <% }) %>
+              </select>
+            </div>
             <div class="sm:col-span-2">
               <label
                 for="description"

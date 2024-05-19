@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import * as projectService from "../services/projectService";
+import * as clientService from "../services/clientService";
 import slug from "slug";
 import fs from "fs-extra";
 import path from "path";
 import sanitizeHtml from "sanitize-html";
 import { Project } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 const getAllProject = async (req: Request, res: Response) => {
   try {
     const projects = await projectService.getAllProject();
@@ -47,6 +50,7 @@ const viewProject = async (req: Request, res: Response) => {
     };
 
     const getProject = await projectService.getAllProject();
+    const getClient = await clientService.getAllClient();
     // console.log("cek sess", req.session.user.id);
     if (!getProject) {
       return res.status(404).json({ message: "Project not found" });
@@ -66,6 +70,7 @@ const viewProject = async (req: Request, res: Response) => {
       title: "Project",
       alert,
       data: getProject,
+      dataClient: getClient,
     });
   } catch (error) {
     console.error(error);
@@ -75,9 +80,13 @@ const viewProject = async (req: Request, res: Response) => {
 
 const createProject = async (req: Request, res: Response) => {
   try {
-    const { name, description, link } = req.body;
-    console.log("cek req project", req.body);
-    if (!req.file) {
+    const { name, description, link, client } = req.body;
+    const clientId = parseInt(client);
+    const id = req.decoded.id;
+    const slugs = slug(name);
+    const files = req.files as Express.Multer.File[];
+    // console.log("cek file", files);
+    if (!req.files) {
       // throw new Error("File tidak ditemukan")
       req.flash("alertMessage", "Failed to upload image is mandatory");
       req.flash("alertTitle", "Failed");
@@ -85,14 +94,16 @@ const createProject = async (req: Request, res: Response) => {
       return res.redirect("/admin/project");
     }
 
-    console.log("data", req.file);
-    let newImg = `images/${req.file.filename}`;
-    let slugs = slug(name);
+    // console.log("cek", req.body);
+    // let newImg = `images/${files}`;
     let params: any = {
       name: name,
       description: description,
-      image: newImg,
       slug: slugs,
+      clientId: clientId,
+      userId: id,
+      files: files,
+      link: link,
     };
     const project = await projectService.createProject(params);
 
