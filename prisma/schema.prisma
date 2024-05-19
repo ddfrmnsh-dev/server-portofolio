@@ -45,10 +45,10 @@ model Image {
   id            Int          @id @default(autoincrement())
   name          String?
   path_img      String?
-  projectId     Int
-  project       Project      @relation(fields: [projectId], references: [id])
-  postId        Int
-  post          Post      @relation(fields: [postId], references: [id])
+  projectId     Int?
+  project       Project?     @relation(fields: [projectId], references: [id])
+  postId        Int?
+  post          Post?        @relation(fields: [postId], references: [id])
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 }
