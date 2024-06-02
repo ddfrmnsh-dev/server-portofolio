@@ -1,6 +1,6 @@
 import { PrismaClient, User } from "@prisma/client";
 // import { Request, Response,NextFunction } from "express";
-import bycrypt from "bcrypt";
+import bycrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 

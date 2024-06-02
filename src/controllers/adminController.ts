@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as userService from "../services/userService";
 import * as projectService from "../services/projectService";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
 let secret = process.env.TOKEN_SECRET;
 
