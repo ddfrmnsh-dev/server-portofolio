@@ -51,7 +51,6 @@ const viewProject = async (req: Request, res: Response) => {
 
     const getProject = await projectService.getAllProject();
     const getClient = await clientService.getAllClient();
-    // console.log("cek sess", req.session.user.id);
     if (!getProject) {
       return res.status(404).json({ message: "Project not found" });
     }

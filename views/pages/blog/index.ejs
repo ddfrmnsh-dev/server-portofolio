@@ -51,7 +51,7 @@
                     data-description="<%= datas.description %>"
                     data-link="<%= datas.link %>"
                   ><i class="fa-solid fa-pen-to-square" style="font-size: 20px;"></i></a>
-                  <a id="updateButton" data-id="<%= datas.id %>" class="button-update bg-yellow-500 p-2 rounded-md text-white hover:bg-yellow-400"><i class="fa-solid fa-circle-check" style="font-size: 20px;"></i></a>
+                  <a id="updateButton" data-id="<%= datas.id %>" class="button-update <%= datas.published ? "bg-green-500 hover:bg-green-400": "bg-yellow-500 hover:bg-yellow-400"%> p-2 rounded-md text-white "><i class="fa-solid fa-circle-check" style="font-size: 20px;"></i></a>
                   <button type="submit" class="bg-red-500 p-2 rounded-md text-white hover:bg-red-400"><i class="fa-solid fa-trash-can" style="font-size: 20px;"></i></button>
                 </form>
               </div>

@@ -40,12 +40,9 @@ const createProject = async (params: any) => {
 const getAllProject = async () => {
   try {
     const project = await prisma.project.findMany({
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-      },
+      include: {
+        client: true
+      }
     });
     return project;
   } catch (error) {

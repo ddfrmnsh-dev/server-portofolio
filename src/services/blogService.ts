@@ -5,41 +5,53 @@ const prisma = new PrismaClient();
 
 const createPost = async (params: any) => {
   try {
-    //create category in post
-    // const categories = params.categories.map((category: any) => category.name);
-    // console.log(categories); // Output: ['category1', 'category2', 'category3']
-    const categories = Array.isArray(params.categories) ? params.categories : [params.categories];
-    // console.log("params", params.categories.name)
-    const post = await prisma.post.create({
-      data: {
-        authorId: params.authorId,
-        title: params.title,
-        slug: params.slug,
-        content: params.content,
-        published: params.published,
-        categories: {
-          // create: categories.map((category: any) => ({
-          //   name: category.name,
-          //   slug: category.slug,
-          // })),
-          // create: [
-          //   {
-          //     category: {
-          //       connect: {
-          //         id: categories.map((id: number) => ({ id })),
-          //       }
-          //     }
-          //   }
-          // ]
-          create: categories.map((categoryId: any) => ({
-            category: {
-              connect: { id: categoryId }
-            }
-          }))
+    const posts = await prisma.$transaction(async () => {
+
+      const categories = Array.isArray(params.categories) ? params.categories : [params.categories];
+      // console.log("params", params.categories.name)
+      const files = params.files;
+      const post = await prisma.post.create({
+        data: {
+          authorId: params.authorId,
+          title: params.title,
+          slug: params.slug,
+          content: params.content,
+          published: params.published,
+          categories: {
+            // create: categories.map((category: any) => ({
+            //   name: category.name,
+            //   slug: category.slug,
+            // })),
+            // create: [
+            //   {
+            //     category: {
+            //       connect: {
+            //         id: categories.map((id: number) => ({ id })),
+            //       }
+            //     }
+            //   }
+            // ]
+            create: categories.map((categoryId: any) => ({
+              category: {
+                connect: { id: categoryId }
+              }
+            }))
+          },
         },
-      },
-    });
-    return post;
+      });
+
+      const imagePromises = files.map((file: any) =>
+        prisma.image.create({
+          data: {
+            name: file.filename,
+            postId: post.id,
+            path_img: `images/${file.filename}`,
+          }
+        })
+      );
+      await Promise.all(imagePromises)
+    })
+    return posts;
   } catch (error) {
     console.log("Error", error);
     return error;

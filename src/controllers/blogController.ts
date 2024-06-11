@@ -11,8 +11,17 @@ const createBlog = async (req: Request, res: Response) => {
   try {
     const { title, description, content } = req.body;
     //get id author from session
-    const authorId = req.session.user.id;
+    const authorId = req.decoded.id;
+    const files = req.files as Express.Multer.File[];
+    console.log("cek file", files);
 
+    if (!req.files) {
+      // throw new Error("File tidak ditemukan")
+      req.flash("alertMessage", "Failed to upload image is mandatory");
+      req.flash("alertTitle", "Failed");
+      req.flash("alertStatus", "red");
+      return res.redirect("/admin/blog");
+    }
     //looping array category
     const category = [];
     for (let i = 0; i < req.body.category.length; i++) {
@@ -27,18 +36,11 @@ const createBlog = async (req: Request, res: Response) => {
     }
 
     // console.log("cek req blog", category);
-    if (!req.file) {
-      req.flash("alertMessage", "Failed to upload image is mandatory");
-      req.flash("alertTitle", "Failed");
-      req.flash("alertStatus", "red");
-      return res.redirect("/admin/blog");
-    }
 
     // //create slug from category
 
     // // const slugCategory = slug(category);
     const slugTitle = slug(title);
-    const newImg = `images/${req.file.filename}`;
     const checkSlug = await blogService.checkSlug(slugTitle);
     const checkCategory = await blogService.findOrCreateCategories(category);
     console.log("cek data", checkCategory);
@@ -54,6 +56,7 @@ const createBlog = async (req: Request, res: Response) => {
       content: content,
       published: false,
       categories: checkCategory,
+      files: files,
     };
 
     const project = await blogService.createPost(params);

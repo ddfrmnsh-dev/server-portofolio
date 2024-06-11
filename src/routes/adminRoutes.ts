@@ -52,7 +52,7 @@ Route-blog
 router.get("/blog", authMiddleware.isAuthenticated, blogController.viewBlog);
 router.post(
   "/blog",
-  upload("images").single("img"),
+  upload("images").array("img"),
   authMiddleware.isAuthenticated,
   blogController.createBlog
 );

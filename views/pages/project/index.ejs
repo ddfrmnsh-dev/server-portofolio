@@ -19,6 +19,7 @@
             <th scope="col" class="px-6 py-3">Slug</th>
             <th scope="col" class="px-6 py-3">Description</th>
             <th scope="col" class="px-6 py-3">Link</th>
+            <th scope="col" class="px-6 py-3">Client</th>
             <th scope="col" class="px-6 py-3">Action</th>
           </tr>
         </thead>
@@ -39,7 +40,8 @@
             </th> 
             <td class="px-6 py-4"><%= datas.slug  %></td>
             <td class="px-6 py-4"><%= datas.description  %></td>
-            <td class="px-6 py-4"><%= datas.link  %></td>
+            <td class="px-6 py-4"><%= datas.link_website  %></td>
+            <td class="px-6 py-4"><%= datas.client.name  %></td>
             <td class="px-6 py-4 flex flex-row items-center">
               <form action="/admin/project/<%= datas.id %>?_method=DELETE" method="POST">
                 <a href="#" id="editButton" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" type="button" class="editButton bg-blue-500 mr-2 p-2 rounded-md text-white hover:bg-blue-400"
@@ -47,7 +49,7 @@
                   data-name="<%= datas.name %>"
                   data-slug="<%= datas.slug %>"
                   data-description="<%= datas.description %>"
-                  data-link="<%= datas.link %>"
+                  data-link="<%= datas.link_website %>"
                 >Edit</a>
                 <button type="submit" class="bg-red-500 p-2 rounded-md text-white hover:bg-red-400">Delete</button>
               </form>
