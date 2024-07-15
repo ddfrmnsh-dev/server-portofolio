@@ -185,4 +185,28 @@ tinymce.init({
   },
   content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
 });
+// tinymce.init({
+//       selector: 'textarea#content',
+//       plugins: 'image',
+//       toolbar: 'image',
+//       skin: 'oxide-dark' ,
+//       content_css: 'dark',
+//       images_upload_handler: function (blobInfo, success, failure) {
+//         const formData = new FormData();
+//         formData.append('image', blobInfo.blob(), blobInfo.filename());
+
+//         fetch('/upload-image', {
+//           method: 'POST',
+//           body: formData
+//         })
+//         .then(response => response.json())
+//         .then(result => {
+//           success(`data:image/jpeg;base64,${result.base64Image}`);
+//         })
+//         .catch(error => {
+//           console.error('Error uploading image:', error);
+//           failure('Failed to upload image');
+//         });
+//       }
+//     });
 </script>

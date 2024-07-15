@@ -33,6 +33,7 @@ const upload = (folderName: any) => {
         );
       },
     }),
+    limits: { fileSize: 25 * 1024 * 1024 },
   });
 };
 
