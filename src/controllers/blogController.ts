@@ -88,6 +88,24 @@ const getAllBlog = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleBlog = async (req: Request, res: Response) => {
+  try {
+    const postSlug = req.params.slug;
+
+    console.log("Check Slugs BE", postSlug);
+
+    const blog = await blogService.findBySlug(postSlug);
+
+    return res.json({
+      message: "Success",
+      data: blog,
+    });
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+};
+
 const viewBlog = async (req: Request, res: Response) => {
   try {
     const alertMessage = req.flash("alertMessage");
