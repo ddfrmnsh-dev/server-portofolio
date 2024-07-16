@@ -41,7 +41,7 @@
             <td class="px-6 py-4"><%= datas.slug  %></td>
             <td class="px-6 py-4"><%= datas.description  %></td>
             <td class="px-6 py-4"><%= datas.link_website  %></td>
-            <td class="px-6 py-4"><%= datas.client.name  %></td>
+            <td class="px-6 py-4"><%= datas.client ? datas.client.name :"N/A"  %></td>
             <td class="px-6 py-4 flex flex-row items-center">
               <form action="/admin/project/<%= datas.id %>?_method=DELETE" method="POST">
                 <a href="#" id="editButton" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" type="button" class="editButton bg-blue-500 mr-2 p-2 rounded-md text-white hover:bg-blue-400"
@@ -50,6 +50,7 @@
                   data-slug="<%= datas.slug %>"
                   data-description="<%= datas.description %>"
                   data-link="<%= datas.link_website %>"
+                  data-client="<%= datas.client.name %>"
                 >Edit</a>
                 <button type="submit" class="bg-red-500 p-2 rounded-md text-white hover:bg-red-400">Delete</button>
               </form>
@@ -68,6 +69,46 @@
 
   <script>
     document.getElementById('dataTable').addEventListener('click', function(event) {
+      if (event.target.classList.contains('editButton')) {
+        event.preventDefault();
+        let id = event.target.dataset.id;
+        let name = event.target.dataset.name;
+        let link = event.target.dataset.link;
+        let description = event.target.dataset.description;
+        let client = event.target.dataset.client;
+
+        console.log("cek client", client);
+
+        let editModal = document.getElementById('updateProductModal');
+
+        editModal.querySelector('.id').value = id;
+        editModal.querySelector('.name').value = name;
+        editModal.querySelector('.link').value = link;
+        editModal.querySelector('.description').value = description;
+
+        const clientSelect = editModal.querySelector('#client');
+        clientSelect.innerHTML = '';
+
+        // Dapatkan semua klien dari data
+        const allClients = JSON.stringify(clients);
+
+        allClients.forEach(clientData => {
+          const optionElement = document.createElement('option');
+          optionElement.value = clientData.id;
+          optionElement.textContent = clientData.name;
+          if (clientData.id == client) {
+            optionElement.selected = true; // Pilih opsi klien yang sesuai
+          }
+          clientSelect.appendChild(optionElement);
+        });
+
+        $('#updateProductModal').modal('show');
+      }
+    });
+</script>
+
+  <!-- <script>
+    document.getElementById('dataTable').addEventListener('click', function(event) {
     if (event.target.classList.contains('editButton')) {
         // Dapatkan nilai data dari elemen yang diklik
         event.preventDefault();
@@ -75,6 +116,9 @@
         let name = event.target.dataset.name;
         let link = event.target.dataset.link;
         let description = event.target.dataset.description;
+        let client = event.target.dataset.client;
+
+        console.log("cek client", client);
 
         // Tampilkan modal edit
         let editModal = document.getElementById('updateProductModal');
@@ -83,10 +127,21 @@
         editModal.querySelector('.name').value = name;
         editModal.querySelector('.link').value = link;
         editModal.querySelector('.description').value = description;
+        editModal.querySelector('.client').value = client;
+            
+        const clientSelect = editModal.querySelector('#client');
+            
+            // Kosongkan elemen select klien
+        clientSelect.innerHTML = '';
 
+        const optionElement = document.createElement('option');
+        optionElement.value = client;
+        optionElement.textContent = client;
+        optionElement.selected = true; // Pilih opsi klien
+        clientSelect.appendChild(optionElement);
         editModal.classList.remove('hidden');
 
     }
 });
 
-</script>
+</script> -->

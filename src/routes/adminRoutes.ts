@@ -61,6 +61,7 @@ router.put(
   authMiddleware.isAuthenticated,
   blogController.updateStatus
 );
+router.delete("/blog/:id", blogController.deleteBlog);
 
 /*
 Route-client

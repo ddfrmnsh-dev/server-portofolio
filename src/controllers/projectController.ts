@@ -63,7 +63,7 @@ const viewProject = async (req: Request, res: Response) => {
         });
       });
     }
-
+    console.log("cek client bes", getClient)
     return res.render("pages/project/index", {
       layout: "layouts/main-layout",
       title: "Project",

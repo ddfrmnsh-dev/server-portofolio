@@ -152,4 +152,30 @@ const updateStatus = async (req: Request, res: Response) => {
     return res.status(404).json({ message: "Blog not found" });
   }
 }
-export { createBlog, getAllBlog, viewBlog, updateStatus };
+
+const deleteBlog = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      throw new Error("Id tidak ditemukan");
+    }
+    let params = parseInt(id);
+    const item: any = await blogService.findById(params);
+
+    await fs.unlink(path.join(`public/${item.path_img}`), (err) => {
+      if (err) {
+        throw new Error("Failed to delete image");
+      }
+    });
+
+    await blogService.deleteBlog(params);
+    req.flash("alertMessage", "Successfully delete project");
+    req.flash("alertTitle", "Delete");
+    req.flash("alertStatus", "red");
+    return res.redirect("/admin/project");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export { createBlog, getAllBlog, viewBlog, updateStatus, deleteBlog };

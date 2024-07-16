@@ -44,6 +44,7 @@ const getAllProject = async () => {
         client: true
       }
     });
+    console.log("client be", project)
     return project;
   } catch (error) {
     console.log("Error", error);

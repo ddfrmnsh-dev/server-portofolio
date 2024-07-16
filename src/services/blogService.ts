@@ -164,4 +164,18 @@ const findById = async (id: number) => {
     return error;
   }
 }
-export { findById, createPost, checkSlug, getAllPost, findOrCreateCategories, updateStatus };
+
+const deleteBlog = async (id: number) => {
+  try {
+    const project = await prisma.post.delete({
+      where: {
+        id,
+      },
+    });
+    return project;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+};
+export { findById, createPost, checkSlug, getAllPost, findOrCreateCategories, updateStatus, deleteBlog };
