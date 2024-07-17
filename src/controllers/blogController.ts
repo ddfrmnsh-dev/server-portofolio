@@ -13,7 +13,7 @@ const createBlog = async (req: Request, res: Response) => {
     //get id author from session
     const authorId = req.decoded.id;
     const files = req.files as Express.Multer.File[];
-    console.log("cek file", files);
+    console.log("cek content", content);
 
     if (!req.files) {
       // throw new Error("File tidak ditemukan")
@@ -59,11 +59,11 @@ const createBlog = async (req: Request, res: Response) => {
       files: files,
     };
 
-    const project = await blogService.createPost(params);
+    // const project = await blogService.createPost(params);
     req.flash("alertMessage", "Successfully add new Article");
     req.flash("alertTitle", "Success");
     req.flash("alertStatus", "green");
-    console.log("data", project);
+    console.log("data");
     return res.redirect("/admin/blog");
     // return res.status(201).json(project);
   } catch (error) {
@@ -74,13 +74,34 @@ const createBlog = async (req: Request, res: Response) => {
 
 const getAllBlog = async (req: Request, res: Response) => {
   try {
-    const blogs = await blogService.getAllPost();
-    // if (!blogs) {
-    //   return res.status(404).json({ message: "Blog not found" });
-    // }
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const offset = (page - 1) * limit;
+
+    // const blogs = await blogService.getAllPostAPI();
+    const blogs = await blogService.getAllPostAPI(limit, offset);
+
+    const totalPosts: any = await blogService.countPost();
+    if (totalPosts === 0) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    console.log("cek total page", totalPages);
+    console.log("cek total post", totalPosts);
+    console.log("cek total limit", totalPosts);
+    // console.log("cek data", blogs);
+    if (!blogs) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
     return res.json({
       message: "success",
       data: blogs,
+      meta: {
+        total: totalPages,
+        page: page,
+        limit: limit,
+      }
     });
   } catch (error) {
     console.error(error);
@@ -196,4 +217,4 @@ const deleteBlog = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-export { createBlog, getAllBlog, viewBlog, updateStatus, deleteBlog };
+export { createBlog, getAllBlog, viewBlog, updateStatus, deleteBlog, getSingleBlog };

@@ -74,9 +74,13 @@ const checkSlug = async (slug: string, id?: number) => {
   }
 };
 
-const getAllPost = async () => {
+const getAllPostAPI = async (take: number, skip: number) => {
+  // const getAllPostAPI = async () => {
   try {
-    const post = await prisma.post.findMany({
+    console.log("cek data", take, skip);
+    const data = await prisma.post.findMany({
+      skip: skip,
+      take: take,
       select: {
         id: true,
         title: true,
@@ -106,9 +110,38 @@ const getAllPost = async () => {
           },
         },
       },
+      orderBy: {
+        createdAt: "desc"
+      }
     });
 
+    const post = data.filter((post) => {
+      return post.published === true
+    })
     return post;
+  } catch (error) {
+    console.log("Error", error);
+  }
+};
+
+const countPost = async () => {
+  try {
+    const count = await prisma.post.count({
+      where: {
+        published: true,
+      }
+    });
+    console.log("cek count", count);
+    return count;
+  } catch (error) {
+    console.log("Error", error);
+  }
+}
+const getAllPost = async () => {
+  try {
+    const data = await prisma.post.findMany();
+
+    return data;
   } catch (error) {
     console.log("Error", error);
   }
@@ -184,12 +217,7 @@ const findBySlug = async (slug: string) => {
       where: {
         slug,
       },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        content: true,
-        published: true,
+      include: {
         categories: {
           select: {
             category: {
@@ -212,7 +240,7 @@ const findBySlug = async (slug: string) => {
             path_img: true,
           },
         },
-      },
+      }
     });
 
     return post;
@@ -235,4 +263,4 @@ const deleteBlog = async (id: number) => {
     return error;
   }
 };
-export { findById, createPost, checkSlug, getAllPost, findOrCreateCategories, updateStatus, deleteBlog };
+export { findById, createPost, checkSlug, getAllPost, findOrCreateCategories, updateStatus, deleteBlog, findBySlug, getAllPostAPI, countPost };
