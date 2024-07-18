@@ -56,6 +56,12 @@ router.post(
   authMiddleware.isAuthenticated,
   blogController.createBlog
 );
+router.post(
+  "/blog/upload/image",
+  upload("article").single("file"),
+  authMiddleware.isAuthenticated,
+  blogController.uploadImage
+);
 router.put(
   "/updateStatus/:id",
   authMiddleware.isAuthenticated,

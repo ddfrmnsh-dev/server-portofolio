@@ -65,7 +65,7 @@ model Client {
 model Post {
   id         Int        @id @default(autoincrement())
   title      String?
-  content    String?    @db.Text
+  content    String?    @db.LongText
   slug       String?    @unique
   published  Boolean    @default(false)
   categories CategoryOnPost[]
@@ -89,8 +89,8 @@ model CategoryOnPost {
   id          Int       @id @default(autoincrement())
   postId      Int
   categoryId  Int
-  post        Post      @relation(fields: [postId], references: [id])
-  category    Category  @relation(fields: [categoryId], references: [id])
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

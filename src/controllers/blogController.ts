@@ -59,11 +59,11 @@ const createBlog = async (req: Request, res: Response) => {
       files: files,
     };
 
-    // const project = await blogService.createPost(params);
+    const project = await blogService.createPost(params);
     req.flash("alertMessage", "Successfully add new Article");
     req.flash("alertTitle", "Success");
     req.flash("alertStatus", "green");
-    console.log("data");
+    console.log("data", project);
     return res.redirect("/admin/blog");
     // return res.status(201).json(project);
   } catch (error) {
@@ -101,7 +101,7 @@ const getAllBlog = async (req: Request, res: Response) => {
         total: totalPages,
         page: page,
         limit: limit,
-      }
+      },
     });
   } catch (error) {
     console.error(error);
@@ -125,6 +125,21 @@ const getSingleBlog = async (req: Request, res: Response) => {
     console.log("Error", error);
     return error;
   }
+};
+
+const uploadImage = async (req: Request, res: Response) => {
+  const files = req.file;
+
+  if (!files) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const fileUrl = `http://localhost:3000/article/${files.filename}`;
+
+  res.json({
+    message: "File uploaded successfully",
+    file: { url: fileUrl, title: files.originalname },
+  });
 };
 
 const viewBlog = async (req: Request, res: Response) => {
@@ -190,7 +205,7 @@ const updateStatus = async (req: Request, res: Response) => {
   } catch (e) {
     return res.status(404).json({ message: "Blog not found" });
   }
-}
+};
 
 const deleteBlog = async (req: Request, res: Response) => {
   try {
@@ -201,20 +216,30 @@ const deleteBlog = async (req: Request, res: Response) => {
     let params = parseInt(id);
     const item: any = await blogService.findById(params);
 
-    await fs.unlink(path.join(`public/${item.path_img}`), (err) => {
+    // console.log("cek item delete", item.image[0].path_img);
+
+    await fs.unlink(path.join(`public/${item.image[0].path_img}`), (err) => {
       if (err) {
         throw new Error("Failed to delete image");
       }
     });
 
     await blogService.deleteBlog(params);
-    req.flash("alertMessage", "Successfully delete project");
+    req.flash("alertMessage", "Successfully delete blog");
     req.flash("alertTitle", "Delete");
     req.flash("alertStatus", "red");
-    return res.redirect("/admin/project");
+    return res.redirect("/admin/blog");
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-export { createBlog, getAllBlog, viewBlog, updateStatus, deleteBlog, getSingleBlog };
+export {
+  createBlog,
+  getAllBlog,
+  viewBlog,
+  updateStatus,
+  deleteBlog,
+  getSingleBlog,
+  uploadImage,
+};

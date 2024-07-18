@@ -111,13 +111,13 @@ const getAllPostAPI = async (take: number, skip: number) => {
         },
       },
       orderBy: {
-        createdAt: "desc"
-      }
+        createdAt: "desc",
+      },
     });
 
     const post = data.filter((post) => {
-      return post.published === true
-    })
+      return post.published === true;
+    });
     return post;
   } catch (error) {
     console.log("Error", error);
@@ -129,14 +129,14 @@ const countPost = async () => {
     const count = await prisma.post.count({
       where: {
         published: true,
-      }
+      },
     });
     console.log("cek count", count);
     return count;
   } catch (error) {
     console.log("Error", error);
   }
-}
+};
 const getAllPost = async () => {
   try {
     const data = await prisma.post.findMany();
@@ -198,10 +198,34 @@ const findById = async (id: number) => {
   try {
     const post = await prisma.post.findUnique({
       where: {
-        id,
+        id: id,
       },
-      select: {
-        published: true,
+      // select: {
+      //   published: true,
+      // },
+      include: {
+        categories: {
+          select: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        },
+        author: {
+          select: {
+            name: true,
+          },
+        },
+        image: {
+          select: {
+            id: true,
+            path_img: true,
+          },
+        },
       },
     });
     return post;
@@ -240,7 +264,7 @@ const findBySlug = async (slug: string) => {
             path_img: true,
           },
         },
-      }
+      },
     });
 
     return post;
@@ -248,7 +272,7 @@ const findBySlug = async (slug: string) => {
     console.log("Error", error);
     return error;
   }
-}
+};
 
 const deleteBlog = async (id: number) => {
   try {
@@ -263,4 +287,15 @@ const deleteBlog = async (id: number) => {
     return error;
   }
 };
-export { findById, createPost, checkSlug, getAllPost, findOrCreateCategories, updateStatus, deleteBlog, findBySlug, getAllPostAPI, countPost };
+export {
+  findById,
+  createPost,
+  checkSlug,
+  getAllPost,
+  findOrCreateCategories,
+  updateStatus,
+  deleteBlog,
+  findBySlug,
+  getAllPostAPI,
+  countPost,
+};
