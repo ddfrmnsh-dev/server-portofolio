@@ -63,17 +63,18 @@ model Client {
 }
 
 model Post {
-  id         Int        @id @default(autoincrement())
-  title      String?
-  content    String?    @db.LongText
-  slug       String?    @unique
-  published  Boolean    @default(false)
-  categories CategoryOnPost[]
-  image      Image[]
-  authorId   Int
-  author     User       @relation(fields: [authorId], references: [id])
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id               Int        @id @default(autoincrement())
+  title            String?
+  description      String?
+  content          String?    @db.LongText
+  slug             String?    @unique
+  published        Boolean    @default(false)
+  categories       CategoryOnPost[]
+  image            Image[]
+  authorId         Int
+  author           User       @relation(fields: [authorId], references: [id])
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 
 model Category {
@@ -89,8 +90,8 @@ model CategoryOnPost {
   id          Int       @id @default(autoincrement())
   postId      Int
   categoryId  Int
-  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  post        Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category    Category?  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

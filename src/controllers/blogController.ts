@@ -13,7 +13,7 @@ const createBlog = async (req: Request, res: Response) => {
     //get id author from session
     const authorId = req.decoded.id;
     const files = req.files as Express.Multer.File[];
-    console.log("cek content", content);
+    console.log("cek content", req.body);
 
     if (!req.files) {
       // throw new Error("File tidak ditemukan")
@@ -24,15 +24,18 @@ const createBlog = async (req: Request, res: Response) => {
     }
     //looping array category
     const category = [];
-    for (let i = 0; i < req.body.category.length; i++) {
-      let slugs = slug(req.body.category[i]);
-      let names = req.body.category[i];
-      let myObject = {
-        name: names,
-        slug: slugs,
-      };
-      // category.push(req.body.category[i]);
-      category.push(myObject);
+
+    if (req.body.category) {
+      for (let i = 0; i < req.body.category.length; i++) {
+        let slugs = slug(req.body.category[i]);
+        let names = req.body.category[i];
+        let myObject = {
+          name: names,
+          slug: slugs,
+        };
+        // category.push(req.body.category[i]);
+        category.push(myObject);
+      }
     }
 
     // console.log("cek req blog", category);
@@ -59,12 +62,19 @@ const createBlog = async (req: Request, res: Response) => {
       files: files,
     };
 
-    const project = await blogService.createPost(params);
-    req.flash("alertMessage", "Successfully add new Article");
-    req.flash("alertTitle", "Success");
-    req.flash("alertStatus", "green");
-    console.log("data", project);
-    return res.redirect("/admin/blog");
+    try {
+      const project = await blogService.createPost(params);
+      req.flash("alertMessage", "Successfully add new Article");
+      req.flash("alertTitle", "Success");
+      req.flash("alertStatus", "green");
+
+      return res.redirect("/admin/blog");
+    } catch (error) {
+      req.flash("alertMessage", `${error}`);
+      req.flash("alertTitle", "Failed");
+      req.flash("alertStatus", "red");
+      return res.redirect("/admin/blog");
+    }
     // return res.status(201).json(project);
   } catch (error) {
     console.error(error);
@@ -180,10 +190,4 @@ const deleteBlog = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-export {
-  createBlog,
-  viewBlog,
-  updateStatus,
-  deleteBlog,
-  uploadImage,
-};
+export { createBlog, viewBlog, updateStatus, deleteBlog, uploadImage };

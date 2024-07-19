@@ -18,6 +18,7 @@ const createPost = async (params: any) => {
           slug: params.slug,
           content: params.content,
           published: params.published,
+          description: params.description,
           categories: {
             // create: categories.map((category: any) => ({
             //   name: category.name,
@@ -55,7 +56,7 @@ const createPost = async (params: any) => {
     return posts;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 

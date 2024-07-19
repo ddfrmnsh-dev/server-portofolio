@@ -11,6 +11,7 @@ import cookieParser from "cookie-parser";
 import methodOvveride from "method-override";
 import path from "path";
 import createError from "http-errors";
+import { errorHandler } from "./src/middleware/errorHandler";
 
 const app = express();
 const router = express.Router();
@@ -21,6 +22,7 @@ app.set("views", "./views");
 app.set("view engine", "ejs");
 app.use(methodOvveride("_method"));
 // Middleware untuk parsing body dari request
+app.use(errorHandler);
 app.use(cookieParser());
 app.use(flash());
 app.use(ejsLayout);
