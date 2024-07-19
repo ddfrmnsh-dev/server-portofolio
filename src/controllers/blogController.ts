@@ -72,61 +72,6 @@ const createBlog = async (req: Request, res: Response) => {
   }
 };
 
-const getAllBlog = async (req: Request, res: Response) => {
-  try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const offset = (page - 1) * limit;
-
-    // const blogs = await blogService.getAllPostAPI();
-    const blogs = await blogService.getAllPostAPI(limit, offset);
-
-    const totalPosts: any = await blogService.countPost();
-    if (totalPosts === 0) {
-      return res.status(404).json({ message: "Blog not found" });
-    }
-    const totalPages = Math.ceil(totalPosts / limit);
-
-    console.log("cek total page", totalPages);
-    console.log("cek total post", totalPosts);
-    console.log("cek total limit", totalPosts);
-    // console.log("cek data", blogs);
-    if (!blogs) {
-      return res.status(404).json({ message: "Blog not found" });
-    }
-    return res.json({
-      message: "success",
-      data: blogs,
-      meta: {
-        total: totalPages,
-        page: page,
-        limit: limit,
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-};
-
-const getSingleBlog = async (req: Request, res: Response) => {
-  try {
-    const postSlug = req.params.slug;
-
-    console.log("Check Slugs BE", postSlug);
-
-    const blog = await blogService.findBySlug(postSlug);
-
-    return res.json({
-      message: "Success",
-      data: blog,
-    });
-  } catch (error) {
-    console.log("Error", error);
-    return error;
-  }
-};
-
 const uploadImage = async (req: Request, res: Response) => {
   const files = req.file;
 
@@ -217,12 +162,13 @@ const deleteBlog = async (req: Request, res: Response) => {
     const item: any = await blogService.findById(params);
 
     // console.log("cek item delete", item.image[0].path_img);
-
-    await fs.unlink(path.join(`public/${item.image[0].path_img}`), (err) => {
-      if (err) {
-        throw new Error("Failed to delete image");
-      }
-    });
+    if (item.image) {
+      await fs.unlink(path.join(`public/${item.image[0].path_img}`), (err) => {
+        if (err) {
+          throw new Error("Failed to delete image");
+        }
+      });
+    }
 
     await blogService.deleteBlog(params);
     req.flash("alertMessage", "Successfully delete blog");
@@ -236,10 +182,8 @@ const deleteBlog = async (req: Request, res: Response) => {
 };
 export {
   createBlog,
-  getAllBlog,
   viewBlog,
   updateStatus,
   deleteBlog,
-  getSingleBlog,
   uploadImage,
 };
