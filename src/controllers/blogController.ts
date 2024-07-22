@@ -82,6 +82,35 @@ const createBlog = async (req: Request, res: Response) => {
   }
 };
 
+// const updateBlog = async (req: Request, res: Response) => {
+//   try {
+//     const { title, description, content } = req.body;
+//     const id = req.params.id;
+//     const files = req.files as Express.Multer.File[];
+//     console.log("cek content", req.body);
+//     const authorId = req.decoded.id;
+//     const slugTitle = slug(title);
+//     const checkSlug = await blogService.checkSlug(slugTitle);
+//     const checkCategory = await blogService.findOrCreateCategories(category);
+//     console.log("cek data", checkCategory);
+//     if (checkSlug) {
+//       return res.status(400).json({ message: "Slug telah digunakan" });
+//     }
+//     let params = {
+//       authorId: authorId,
+//       title: title,
+//       slug: slugTitle,
+//       description: description,
+//       content: content,
+//       published: false,
+//       categories: checkCategory,
+//       files: files,
+//     };
+//   } catch (error) {
+
+//   }
+// }
+
 const uploadImage = async (req: Request, res: Response) => {
   const files = req.file;
 
