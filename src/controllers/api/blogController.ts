@@ -31,6 +31,7 @@ const getAllBlog = async (req: Request, res: Response, next: NextFunction) => {
       limit: limit,
     };
 
+    console.log("CEK BLOGS", data);
     return res.json(apiResponse("Get all Blogs", 200, "Success", data));
     // return res.json({
     //     message: "success",
@@ -59,7 +60,7 @@ const getSingleBlog = async (
 
     const data = await blogService.findBySlug(postSlug);
 
-    return res.json(apiResponse("Get all Blogs", 200, "Success", data));
+    return res.json(apiResponse("Get single Blog", 200, "Success", data));
 
     // return res.json({
     //   message: "Success",

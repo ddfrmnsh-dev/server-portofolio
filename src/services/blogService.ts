@@ -82,6 +82,9 @@ const getAllPostAPI = async (take: number, skip: number) => {
     const data = await prisma.post.findMany({
       skip: skip,
       take: take,
+      where: {
+        published: true,
+      },
       select: {
         id: true,
         title: true,
@@ -116,10 +119,7 @@ const getAllPostAPI = async (take: number, skip: number) => {
       },
     });
 
-    const post = data.filter((post) => {
-      return post.published === true;
-    });
-    return post;
+    return data;
   } catch (error) {
     console.log("Error", error);
   }
@@ -257,6 +257,13 @@ const findBySlug = async (slug: string) => {
         author: {
           select: {
             name: true,
+            profession: true,
+            image: {
+              select: {
+                id: true,
+                path_img: true,
+              },
+            },
           },
         },
         image: {
