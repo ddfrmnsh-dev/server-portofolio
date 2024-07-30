@@ -16,8 +16,13 @@ import { errorHandler } from "./src/middleware/errorHandler";
 const app = express();
 const router = express.Router();
 
+const corsOptions = {
+  origin: ["http://localhost:5173", "https://ddfrmnsh.tech"],
+  optionsSuccessStatus: 200,
+};
+
 // Middleware untuk mengaktifkan CORS
-app.use(cors());
+app.use(cors(corsOptions));
 app.set("views", "./views");
 app.set("view engine", "ejs");
 app.use(methodOvveride("_method"));
