@@ -44,7 +44,6 @@ const getAllProject = async () => {
         client: true,
       },
     });
-    console.log("client be", project);
     return project;
   } catch (error) {
     console.log("Error", error);
@@ -106,12 +105,14 @@ const updateProject = async (params: any) => {
         name: params.name,
         slug: params.slug,
         description: params.description,
+        link_website: params.link,
+        clientId: params?.client,
       },
     });
     return project;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 

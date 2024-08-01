@@ -51,6 +51,7 @@ const viewProject = async (req: Request, res: Response) => {
 
     const getProject = await projectService.getAllProject();
     const getClient = await clientService.getAllClient();
+    console.log("CHECK CLIENT", getClient);
     if (!getProject) {
       return res.status(404).json({ message: "Project not found" });
     }
@@ -63,11 +64,11 @@ const viewProject = async (req: Request, res: Response) => {
         });
       });
     }
-    console.log("cek client bes", getClient)
     return res.render("pages/project/index", {
       layout: "layouts/main-layout",
       title: "Project",
       alert,
+      user: req.decoded,
       data: getProject,
       dataClient: getClient,
     });
@@ -118,8 +119,9 @@ const createProject = async (req: Request, res: Response) => {
 };
 
 const updateProject = async (req: Request, res: Response) => {
-  const { id, name, description, link } = req.body;
+  const { id, name, description, link, client } = req.body;
   let ids = parseInt(id);
+  const clientId = parseInt(client);
   try {
     const project: any = await projectService.getProjectById(ids);
     if (req.file == undefined) {
@@ -130,11 +132,20 @@ const updateProject = async (req: Request, res: Response) => {
         description: description,
         link: link,
         slug: slugs,
+        client: clientId || project.clientId,
       };
-      await projectService.updateProject(params);
-      req.flash("alertMessage", "Successfully update project without image");
-      req.flash("alertTitle", "Success");
-      req.flash("alertStatus", "green");
+
+      try {
+        await projectService.updateProject(params);
+        req.flash("alertMessage", "Successfully update project without image");
+        req.flash("alertTitle", "Success");
+        req.flash("alertStatus", "green");
+      } catch (error) {
+        req.flash("alertMessage", `${error}`);
+        req.flash("alertTitle", "Failed");
+        req.flash("alertStatus", "red");
+        return res.redirect("/admin/project");
+      }
     } else {
       await fs.unlink(path.join(`public/${project.path_img}`));
       let newImg = `images/${req.file.filename}`;
@@ -146,6 +157,7 @@ const updateProject = async (req: Request, res: Response) => {
         image: newImg,
         link: link,
         slug: slugs,
+        client: clientId,
       };
       await projectService.updateProject(params);
       req.flash("alertMessage", "Successfully update project");
@@ -154,12 +166,11 @@ const updateProject = async (req: Request, res: Response) => {
     }
     return res.redirect("/admin/project");
   } catch (error: any) {
+    console.error(error);
     req.flash("alertMessage", error.message);
     req.flash("alertTitle", "Failed");
     req.flash("alertStatus", "red");
-    console.error(error);
     res.redirect("/admin/project");
-    // return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -171,12 +182,11 @@ const deleteProject = async (req: Request, res: Response) => {
     }
     let params = parseInt(id);
     const item: any = await projectService.getProjectById(params);
-
-    await fs.unlink(path.join(`public/${item.path_img}`), (err) => {
-      if (err) {
-        throw new Error("Failed to delete image");
-      }
-    });
+    try {
+      await fs.unlink(path.join(`public/${item.path_img}`));
+    } catch (error: any) {
+      console.error("Failed to delete image:", error.message);
+    }
 
     await projectService.deleteProject(params);
     req.flash("alertMessage", "Successfully delete project");
