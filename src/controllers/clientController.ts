@@ -43,6 +43,7 @@ const viewClient = async (req: Request, res: Response) => {
       title: "Client",
       alert,
       data: data,
+      user: req.decoded,
     });
   } catch (error) {
     console.log("Err", error);

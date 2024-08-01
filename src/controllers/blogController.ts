@@ -159,6 +159,7 @@ const viewBlog = async (req: Request, res: Response) => {
       layout: "layouts/main-layout",
       title: "Blog",
       alert,
+      user: req.decoded,
       data: getBlog,
     });
   } catch (error) {
