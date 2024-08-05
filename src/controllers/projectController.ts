@@ -25,13 +25,11 @@ const viewProject = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 5;
     const order = req.query.order || "asc";
     const offset = (page - 1) * limit;
-    // const getProject = await projectService.getAllProject();
     const getProject = await projectService.getAllProject(limit, offset, order);
     const getClient = await clientService.getAllClient();
     const totalProjects: any = await projectService.countProject();
     const totalPages = Math.ceil(totalProjects / limit);
 
-    console.log("CHECK CLIENT", getClient);
     if (!getProject) {
       return res.status(404).json({ message: "Project not found" });
     }

@@ -137,30 +137,26 @@ const viewBlog = async (req: Request, res: Response) => {
       title: alertTitle,
     };
 
-    const getBlog = await blogService.getAllPost();
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const order = req.query.order || "asc";
+    const offset = (page - 1) * limit;
+
+    const getBlog = await blogService.getAllPost(limit, offset, order);
     if (!getBlog) {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    // getBlog.map((val, idx, []) => {
-    //   val.content = val.content.substring(0, 150);
-    // });
-
-    // if (getBlog instanceof Array) {
-    //   getBlog.map((val, idx, []) => {
-    //     val.content = sanitizeHtml(val.content, {
-    //       allowedTags: [],
-    //       allowedAttributes: {},
-    //     });
-    //   });
-    // }
-
+    const totalBlogs: any = await blogService.countPost();
+    const totalPages = Math.ceil(totalBlogs / limit);
     return res.render("pages/blog/index", {
       layout: "layouts/main-layout",
       title: "Blog",
       alert,
       user: req.decoded,
       data: getBlog,
+      page: page,
+      total: totalPages,
     });
   } catch (error) {
     console.error(error);

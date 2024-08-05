@@ -127,20 +127,22 @@ const getAllPostAPI = async (take: number, skip: number) => {
 
 const countPost = async () => {
   try {
-    const count = await prisma.post.count({
-      where: {
-        published: true,
-      },
-    });
-    console.log("cek count", count);
+    const count = await prisma.post.count();
     return count;
   } catch (error) {
     console.log("Error", error);
+    return error;
   }
 };
-const getAllPost = async () => {
+const getAllPost = async (take: number, skip: number, order: any) => {
   try {
-    const data = await prisma.post.findMany();
+    const data = await prisma.post.findMany({
+      take: take,
+      skip: skip,
+      orderBy: {
+        createdAt: order,
+      },
+    });
 
     return data;
   } catch (error) {
