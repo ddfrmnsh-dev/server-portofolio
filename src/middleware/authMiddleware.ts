@@ -6,7 +6,8 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
 
   if (!token) {
     req.flash("alertMessage", "Token tidak tersedia, akses ditolak");
-    req.flash("alertStatus", "danger");
+    req.flash("alertTitle", "Failed");
+    req.flash("alertStatus", "red");
     return res.redirect("/admin/signin");
   }
 
@@ -15,7 +16,8 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     jwt.verify(token, secret, (err: any, decoded: any) => {
       if (err) {
         req.flash("alertMessage", "Token tidak valid");
-        req.flash("alertStatus", "danger");
+        req.flash("alertTitle", "Failed");
+        req.flash("alertStatus", "red");
         return res.redirect("/admin/signin");
       }
       req.decoded = decoded;
@@ -24,11 +26,13 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       req.flash("alertMessage", "Your session expired, please login again !");
-      req.flash("alertStatus", "danger");
+      req.flash("alertTitle", "Failed");
+      req.flash("alertStatus", "red");
       return res.redirect("/admin/signin");
     }
     req.flash("alertMessage", "Token tidak valid, akses ditolak");
-    req.flash("alertStatus", "danger");
+    req.flash("alertTitle", "Failed");
+    req.flash("alertStatus", "red");
     return res.redirect("/admin/signin");
   }
 };
