@@ -26,7 +26,8 @@ const adminLogin = async (req: Request, res: Response) => {
   try {
     if (email == undefined || password == undefined) {
       req.flash("alertMessage", "User or Password is not empty");
-      req.flash("alertStatus", "danger");
+      req.flash("alertTitle", "Failed");
+      req.flash("alertStatus", "red");
       return res.redirect("/admin/signin");
     }
     const user = await userService.getUserByEmail(email);
@@ -45,12 +46,14 @@ const adminLogin = async (req: Request, res: Response) => {
         });
       } else {
         req.flash("alertMessage", "User or Password is not correct");
-        req.flash("alertStatus", "danger");
+        req.flash("alertTitle", "Failed");
+        req.flash("alertStatus", "red");
         return res.redirect("/admin/signin");
       }
     } else {
       req.flash("alertMessage", "User or Password is not correct");
-      req.flash("alertStatus", "danger");
+      req.flash("alertTitle", "Failed");
+      req.flash("alertStatus", "red");
       return res.redirect("/admin/signin");
     }
     req.flash("alertMessage", "Successfully login");
