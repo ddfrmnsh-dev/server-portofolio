@@ -9,9 +9,10 @@ const getAllProject = async (
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
+    const order = (req.query.order as string) || "asc";
     const offset = (page - 1) * limit;
 
-    const projects = await projectService.getAllProjectAPI(limit, offset);
+    const projects = await projectService.getAllProject(limit, offset, order);
 
     if (!projects) {
       return res.status(404).json({ message: "Project not found" });

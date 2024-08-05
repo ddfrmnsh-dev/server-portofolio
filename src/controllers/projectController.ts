@@ -9,34 +9,6 @@ import { Project } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const getAllProject = async (req: Request, res: Response) => {
-  try {
-    const projects = await projectService.getAllProject();
-
-    if (!projects) {
-      return res.status(404).json({ message: "Project not found" });
-    }
-
-    // if (projects instanceof Array) {
-    //     projects.map((val, idx, []) => {
-    //         val.description = sanitizeHtml(val.description, {
-    //             allowedTags: [],
-    //             allowedAttributes: {},
-    //         });
-    //     });
-    // }
-
-    // console.log("cek data", projects);
-
-    return res.json({
-      message: "success",
-      data: projects,
-    });
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-};
 
 const viewProject = async (req: Request, res: Response) => {
   try {
@@ -49,8 +21,16 @@ const viewProject = async (req: Request, res: Response) => {
       title: alertTitle,
     };
 
-    const getProject = await projectService.getAllProject();
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const order = req.query.order || "asc";
+    const offset = (page - 1) * limit;
+    // const getProject = await projectService.getAllProject();
+    const getProject = await projectService.getAllProject(limit, offset, order);
     const getClient = await clientService.getAllClient();
+    const totalProjects: any = await projectService.countProject();
+    const totalPages = Math.ceil(totalProjects / limit);
+
     console.log("CHECK CLIENT", getClient);
     if (!getProject) {
       return res.status(404).json({ message: "Project not found" });
@@ -71,6 +51,8 @@ const viewProject = async (req: Request, res: Response) => {
       user: req.decoded,
       data: getProject,
       dataClient: getClient,
+      total: totalPages,
+      page: page,
     });
   } catch (error) {
     console.error(error);
@@ -199,10 +181,4 @@ const deleteProject = async (req: Request, res: Response) => {
   }
 };
 
-export {
-  viewProject,
-  createProject,
-  updateProject,
-  deleteProject,
-  getAllProject,
-};
+export { viewProject, createProject, updateProject, deleteProject };

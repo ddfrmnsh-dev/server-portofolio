@@ -37,21 +37,7 @@ const createProject = async (params: any) => {
   }
 };
 
-const getAllProject = async () => {
-  try {
-    const project = await prisma.project.findMany({
-      include: {
-        client: true,
-      },
-    });
-    return project;
-  } catch (error) {
-    console.log("Error", error);
-    return error;
-  }
-};
-
-const getAllProjectAPI = async (take: number, skip: number) => {
+const getAllProject = async (take: number, skip: number, order: any) => {
   try {
     const project = await prisma.project.findMany({
       take: take,
@@ -61,7 +47,7 @@ const getAllProjectAPI = async (take: number, skip: number) => {
         image: true,
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: order,
       },
     });
     console.log("client be", project);
@@ -135,6 +121,5 @@ export {
   getProjectById,
   updateProject,
   deleteProject,
-  getAllProjectAPI,
   countProject,
 };
