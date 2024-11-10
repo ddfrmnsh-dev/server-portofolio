@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import * as projectController from "../controllers/projectController";
+import * as authController from "../controllers/authController";
 import * as blogController from "../controllers/blogController";
 import * as apiProjectController from "../controllers/api/projectController";
 import * as apiBlogController from "../controllers/api/blogController";
@@ -7,6 +8,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const router = express.Router();
+
+//API-CMS
+router.post("/v1/admin/signAuth", authController.userLogin);
 
 //API-PROJECT
 router.get("/v1/project", apiProjectController.getAllProject);
