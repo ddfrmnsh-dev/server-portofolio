@@ -10,7 +10,8 @@ dotenv.config();
 const router = express.Router();
 
 //API-CMS
-router.post("/v1/admin/signAuth", authController.userLogin);
+router.post("/auth/adminSigninEnc", authController.userLogin);
+router.post("/testDes", authController.decryptTest);
 
 //API-PROJECT
 router.get("/v1/project", apiProjectController.getAllProject);
