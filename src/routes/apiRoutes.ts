@@ -4,7 +4,9 @@ import * as authController from "../controllers/authController";
 import * as blogController from "../controllers/blogController";
 import * as apiProjectController from "../controllers/api/projectController";
 import * as apiBlogController from "../controllers/api/blogController";
+import * as apiUserController from "../controllers/api/userController";
 import dotenv from "dotenv";
+import authMiddleware from "../middleware/authMiddleware";
 dotenv.config();
 
 const router = express.Router();
@@ -21,5 +23,12 @@ router.post("/v1/blog", blogController.createBlog);
 router.get("/v1/blog", apiBlogController.getAllBlog);
 router.put("/v1/updateBlog/:id", blogController.updateStatus);
 router.post("/v1/blog/:slug", apiBlogController.getSingleBlog);
+
+//API-USER
+router.get(
+  "/v1/users",
+  authMiddleware.authMiddlewares,
+  apiUserController.getAllUser
+);
 
 export default router;

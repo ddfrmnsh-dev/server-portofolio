@@ -133,6 +133,8 @@ const getAllUser = async () => {
         id: true,
         name: true,
         email: true,
+        profession: true,
+        is_active: true,
         createdAt: true,
         updatedAt: true,
       },

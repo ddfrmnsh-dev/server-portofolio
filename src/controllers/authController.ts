@@ -10,7 +10,6 @@ const userLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   let decryptedPassword = decryptData(password);
 
-  console.log("DECRYPT", decryptedPassword);
   try {
     const user = await userService.getUserByEmail(email);
     if (user) {
