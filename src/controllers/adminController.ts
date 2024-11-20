@@ -95,8 +95,8 @@ const checkData = async (req: Request, res: Response) => {
 };
 const getAllUser = async (req: Request, res: Response) => {
   try {
-    const users = await userService.getAllUser();
-    return res.status(200).json(users);
+    // const users = await userService.getAllUser();
+    // return res.status(200).json(users);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });

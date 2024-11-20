@@ -1,5 +1,6 @@
 {
-  "watch": ["src", "config"],
+  "watch": ["src", "config"],   
   "ignore": ["node_modules", "logs"], 
-  "ext": "js,json"
+  "ext": "js,json",            
+  "exec": "node ./index.ts" 
 }

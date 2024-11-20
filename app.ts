@@ -12,15 +12,28 @@ import methodOvveride from "method-override";
 import path from "path";
 import createError from "http-errors";
 import { errorHandler } from "./src/middleware/errorHandler";
+import rateLimit from "express-rate-limit";
 
 const app = express();
 const router = express.Router();
 
 const corsOptions = {
+  // origin: ["https://ddfrmnsh.tech"],
   origin: ["http://localhost:5173", "https://ddfrmnsh.tech"],
   optionsSuccessStatus: 200,
 };
 
+// const limiter = rateLimit({
+//   windowMs: 1 * 60 * 1000,
+//   max: 20,
+//   message: {
+//     status: 429,
+//     message: "Terlalu banyak permintaan. Coba lagi nanti.",
+//   },
+// });
+
+// Terapkan middleware untuk semua rute
+// app.use(limiter);
 // Middleware untuk mengaktifkan CORS
 app.use(cors(corsOptions));
 app.set("views", "./views");
@@ -53,14 +66,6 @@ app.use(
   "/jquery",
   express.static(path.join(__dirname, "node_modules/jquery/dist"))
 );
-// app.use(express.static(__dirname + "public"));
-// app.use('/', express.static('public'))
-// var dir = path.join(__dirname, 'public');
-// app.use(express.static(dir));
-
-// app.use((req, res) => {
-//   res.status(401).send('Unauthorized');
-// });
 app.use(router);
 app.use("/admin", adminRouter);
 app.use(userRouter);
@@ -68,8 +73,5 @@ app.use("/api", apiRouter);
 router.get("/", function tesRoute(req: Request, res: Response) {
   return res.redirect("/admin/signin");
 });
-// app.use(function (req, res, next) {
-//   next(createError(404));
-// });
 
 export default app;

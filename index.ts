@@ -5,6 +5,3 @@ const HOST = "localhost";
 app.listen(PORT, () => {
   console.log(`Serve berjalan pada port http:://${HOST}:${PORT}`);
 });
-// app.listen(PORT, () => {
-//     console.log(`Serve berjalan pada port http://localhost:${PORT}`)
-// });

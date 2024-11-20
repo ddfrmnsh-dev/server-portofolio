@@ -126,9 +126,14 @@ const deleteUser = async (id: number) => {
   }
 };
 
-const getAllUser = async () => {
+const getAllUser = async (take: number, skip: number, order: any) => {
   try {
     const findUser = await prisma.user.findMany({
+      take: take,
+      skip: skip,
+      orderBy: {
+        createdAt: order
+      },
       select: {
         id: true,
         name: true,
@@ -146,7 +151,28 @@ const getAllUser = async () => {
   }
 };
 
+const countUser = async () => {
+  try {
+    const count = await prisma.user.count();
+    return count;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+};
+
+const countUserActive = async () => {
+  try {
+    const count = await prisma.user.count({ where: { is_active: true } });
+    return count;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+}
 export {
+  countUserActive,
+  countUser,
   createUser,
   getUserByEmail,
   getUser,

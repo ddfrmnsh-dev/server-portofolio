@@ -7,12 +7,13 @@ import * as apiBlogController from "../controllers/api/blogController";
 import * as apiUserController from "../controllers/api/userController";
 import dotenv from "dotenv";
 import authMiddleware from "../middleware/authMiddleware";
+import rateLimiter from "../middleware/rateLimiter";
 dotenv.config();
 
 const router = express.Router();
 
 //API-CMS
-router.post("/auth/adminSigninEnc", authController.userLogin);
+router.post("/auth/adminSigninEnc", rateLimiter.limiter, authController.userLogin);
 router.post("/testDes", authController.decryptTest);
 
 //API-PROJECT
@@ -30,5 +31,10 @@ router.get(
   authMiddleware.authMiddlewares,
   apiUserController.getAllUser
 );
+router.post(
+  "/v1/user",
+  authMiddleware.authMiddlewares,
+  apiUserController.createUser
+)
 
 export default router;
