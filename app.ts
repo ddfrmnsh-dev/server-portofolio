@@ -13,6 +13,7 @@ import path from "path";
 import createError from "http-errors";
 import { errorHandler } from "./src/middleware/errorHandler";
 import rateLimit from "express-rate-limit";
+import healthCheckMiddleware from "./src/middleware/healthCheckMiddleware";
 
 const app = express();
 const router = express.Router();
@@ -34,6 +35,7 @@ const corsOptions = {
 
 // Terapkan middleware untuk semua rute
 // app.use(limiter);
+app.use(healthCheckMiddleware);
 // Middleware untuk mengaktifkan CORS
 app.use(cors(corsOptions));
 app.set("views", "./views");
@@ -72,6 +74,13 @@ app.use(userRouter);
 app.use("/api", apiRouter);
 router.get("/", function tesRoute(req: Request, res: Response) {
   return res.redirect("/admin/signin");
+});
+
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Endpoint not found',
+    message: `The requested URL ${req.originalUrl} was not found on this server.`,
+  });
 });
 
 export default app;
