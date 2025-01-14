@@ -26,15 +26,7 @@ router.put("/v1/updateBlog/:id", blogController.updateStatus);
 router.post("/v1/blog/:slug", apiBlogController.getSingleBlog);
 
 //API-USER
-router.get(
-  "/v1/users",
-  authMiddleware.authMiddlewares,
-  apiUserController.getAllUser
-);
-router.post(
-  "/v1/user",
-  authMiddleware.authMiddlewares,
-  apiUserController.createUser
-)
+router.get("/v1/users", authMiddleware.authMiddlewares, apiUserController.getAllUser);
+router.post("/v1/user", authMiddleware.authMiddlewares, apiUserController.createUser);
 
 export default router;

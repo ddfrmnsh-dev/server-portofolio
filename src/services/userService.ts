@@ -1,6 +1,7 @@
 import { PrismaClient, User } from "@prisma/client";
 // import { Request, Response,NextFunction } from "express";
 import bycrypt from "bcrypt";
+import { findByEmail, saveUser } from "../repository/userRepository";
 
 const prisma = new PrismaClient();
 
@@ -10,18 +11,26 @@ export interface CreateUserError extends Error {
 
 const createUser = async (name: string, email: string, password: string) => {
   try {
-    const hashPwd = await bycrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashPwd,
-      },
-    });
+    if (!name || !email || !password) {
+      throw new Error('Name, email, and password are required');
+    }
+
+    if (password.length < 8) {
+      throw new Error('Password must be at least 8 characters long');
+    }
+
+    const existingUser = await findByEmail(email);
+    if (existingUser) {
+      throw new Error('User with this email already exists');
+    }
+
+    const hashedPassword = await bycrypt.hash(password, 10);
+    const user = await saveUser(name, email, hashedPassword);
+
     return user;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 
@@ -35,7 +44,7 @@ const getUserByEmail = async (email: string) => {
     return findUser;
   } catch (error) {
     console.log("Error", error);
-    error;
+    throw error;
   }
 };
 
