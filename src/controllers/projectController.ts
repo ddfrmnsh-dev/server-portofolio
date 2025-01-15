@@ -25,9 +25,9 @@ const viewProject = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 5;
     const order = req.query.order || "asc";
     const offset = (page - 1) * limit;
-    const getProject = await projectService.getAllProject(limit, offset, order);
+    const getProject = await projectService.getAllProjects(limit, offset, order);
     const getClient = await clientService.getAllClient();
-    const totalProjects: any = await projectService.countProject();
+    const totalProjects: any = await projectService.countProjects();
     const totalPages = Math.ceil(totalProjects / limit);
 
     if (!getProject) {
@@ -168,7 +168,7 @@ const deleteProject = async (req: Request, res: Response) => {
       console.error("Failed to delete image:", error.message);
     }
 
-    await projectService.deleteProject(params);
+    await projectService.deleteProjects(params);
     req.flash("alertMessage", "Successfully delete project");
     req.flash("alertTitle", "Delete");
     req.flash("alertStatus", "red");

@@ -7,7 +7,7 @@ const createClient = async (params: any) => {
     const client = await prisma.client.create({
       data: {
         name: params.name,
-        path_logo: params.path_logo,
+        pathLogo: params.path_logo,
       },
     });
 
@@ -52,7 +52,7 @@ const updateClient = async (params: any) => {
       },
       data: {
         name: params.name,
-        path_logo: params.path_logo,
+        pathLogo: params.path_logo,
       },
     });
 

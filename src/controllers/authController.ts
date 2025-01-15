@@ -20,6 +20,11 @@ const userLogin = async (req: Request, res: Response) => {
         const token = jwt.sign({ email, user: user.name }, <Secret>secret, {
           expiresIn: "1h",
         });
+         
+        if (user.isActive === false || user.isActive === null) {
+          return res.status(401).json({ status : false, message: "User is not active" });
+        }
+
         return res.status(200).json(apiResponse("Successfully Login", 200, "success", {
             user: {
               name: user.name,

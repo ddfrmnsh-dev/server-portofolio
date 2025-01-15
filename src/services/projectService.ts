@@ -1,66 +1,46 @@
 import { PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
+import { countProject, deleteProject, getAllProject, saveProject } from "../repository/projectRepository";
+import { findById } from "../repository/userRepository";
 
 const prisma = new PrismaClient();
 
 const createProject = async (params: any) => {
   try {
-    const files = params.files;
-    const project = await prisma.$transaction(async (prisma) => {
-      const newProject = await prisma.project.create({
-        data: {
-          name: params.name,
-          userId: params.userId,
-          slug: params.slug,
-          description: params.description,
-          link_website: params.link,
-          clientId: params.clientId,
-        },
-      });
+    if (!params.files || params.files.length === 0) {
+      throw new Error("No files uploaded");
+    }
 
-      const imagePromises = files.map((file: any) =>
-        prisma.image.create({
-          data: {
-            name: file.filename,
-            projectId: newProject.id,
-            path_img: `images/${file.filename}`,
-          },
-        })
-      );
+    if (!params.name || !params.slug || !params.description) {
+      throw new Error("Missing required fields");
+    }
+    const project = await saveProject(params);
 
-      await Promise.all(imagePromises);
-    });
     return project;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 
-const getAllProject = async (take: number, skip: number, order: any) => {
+const getAllProjects = async (take: number, skip: number, order: any) => {
   try {
-    const project = await prisma.project.findMany({
-      take: take,
-      skip: skip,
-      include: {
-        client: true,
-        image: true,
-      },
-      orderBy: {
-        createdAt: order,
-      },
-    });
-    console.log("client be", project);
+    const project = await getAllProject(take, skip, order);
+    
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
     return project;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 
-const countProject = async () => {
+const countProjects = async () => {
   try {
-    const project = await prisma.project.count();
+    const project = await countProject();
     return project;
   } catch (error) {
     console.log("Error", error);
@@ -91,7 +71,7 @@ const updateProject = async (params: any) => {
         name: params.name,
         slug: params.slug,
         description: params.description,
-        link_website: params.link,
+        linkWebsite: params.link,
         clientId: params?.client,
       },
     });
@@ -102,24 +82,35 @@ const updateProject = async (params: any) => {
   }
 };
 
-const deleteProject = async (id: number) => {
+const deleteProjects = async (id: number) => {
   try {
-    const project = await prisma.project.delete({
-      where: {
-        id,
-      },
-    });
+    if (!id) {
+      throw new Error("Missing required fields");
+    }
+
+    const checkProject = await findById(id);
+
+    if (!checkProject) {
+      throw new Error("Project not found");
+    }
+
+    const project = await deleteProject(id);
+
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
     return project;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 export {
   createProject,
-  getAllProject,
+  getAllProjects,
   getProjectById,
   updateProject,
-  deleteProject,
-  countProject,
+  deleteProjects,
+  countProjects,
 };

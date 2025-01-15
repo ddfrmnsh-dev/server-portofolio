@@ -148,7 +148,7 @@ const getAllUser = async (take: number, skip: number, order: any) => {
         name: true,
         email: true,
         profession: true,
-        is_active: true,
+        isActive: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -172,7 +172,7 @@ const countUser = async () => {
 
 const countUserActive = async () => {
   try {
-    const count = await prisma.user.count({ where: { is_active: true } });
+    const count = await prisma.user.count({ where: { isActive: true } });
     return count;
   } catch (error) {
     console.log("Error", error);

@@ -20,12 +20,12 @@ model User {
   email         String?   @unique
   password      String
   profession    String?
-  is_active     Boolean?
+  isActive      Boolean?  @map("is_active")
   image         Image?
   post          Post[]
   project       Project[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 }
 
 model Project {
@@ -33,37 +33,37 @@ model Project {
   name          String?
   slug          String?
   description   String?   @db.Text
-  link_website  String?
-  userId        Int
-  author        User         @relation(fields: [userId], references: [id])
-  clientId      Int?
-  client        Client?       @relation(fields: [clientId], references: [id])
+  linkWebsite   String?   @map("link_website")
+  userId        Int       @map("user_id")
+  author        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId      Int?      @map("client_id")
+  client        Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   image         Image[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 }
 
 model Image {
   id            Int          @id @default(autoincrement())
   name          String?
-  path_img      String?
-  projectId     Int?
-  project       Project?     @relation(fields: [projectId], references: [id])
-  postId        Int?
-  post          Post?        @relation(fields: [postId], references: [id])
-  userId        Int?         @unique 
-  user          User?        @relation(fields: [userId], references: [id])
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  pathImg       String?      @map("path_img")
+  projectId     Int?         @unique @map("project_id")
+  project       Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  postId        Int?         @unique @map("post_id")
+  post          Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId        Int?         @unique @map("user_id")
+  user          User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
 }
 
 model Client {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String?
-  path_logo   String?
+  pathLogo    String?  @map("path_logo")
   project     Project[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 }
 
 model Post {
@@ -75,27 +75,27 @@ model Post {
   published        Boolean    @default(false)
   categories       CategoryOnPost[]
   image            Image[]
-  authorId         Int
-  author           User       @relation(fields: [authorId], references: [id])
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  authorId         Int        @map("author_id")
+  author           User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
 }
 
 model Category {
-  id        Int         @id @default(autoincrement())
+  id        Int          @id @default(autoincrement())
   name      String
   slug      String
   post      CategoryOnPost[]   
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime?    @default(now()) @map("created_at")
+  updatedAt DateTime?    @updatedAt @map("updated_at")
 }
 
 model CategoryOnPost {
   id          Int       @id @default(autoincrement())
-  postId      Int
-  categoryId  Int
-  post        Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category    Category?  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  postId      Int       @map("post_id")
+  categoryId  Int       @map("category_id")
+  post        Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 }

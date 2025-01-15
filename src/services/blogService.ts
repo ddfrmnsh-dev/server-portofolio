@@ -47,7 +47,7 @@ const createPost = async (params: any) => {
           data: {
             name: file.filename,
             postId: post.id,
-            path_img: `images/${file.filename}`,
+            pathImg: `images/${file.filename}`,
           },
         })
       );
@@ -110,7 +110,7 @@ const getAllPostAPI = async (take: number, skip: number) => {
         image: {
           select: {
             id: true,
-            path_img: true,
+            pathImg: true,
           },
         },
       },
@@ -226,7 +226,7 @@ const findById = async (id: number) => {
         image: {
           select: {
             id: true,
-            path_img: true,
+            pathImg: true,
           },
         },
       },
@@ -263,7 +263,7 @@ const findBySlug = async (slug: string) => {
             image: {
               select: {
                 id: true,
-                path_img: true,
+                pathImg: true,
               },
             },
           },
@@ -271,7 +271,7 @@ const findBySlug = async (slug: string) => {
         image: {
           select: {
             id: true,
-            path_img: true,
+            pathImg: true,
           },
         },
       },
