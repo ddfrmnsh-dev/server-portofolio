@@ -42,6 +42,7 @@ const viewProject = async (req: Request, res: Response) => {
         });
       });
     }
+    
     return res.render("pages/project/index", {
       layout: "layouts/main-layout",
       title: "Project",
@@ -116,7 +117,7 @@ const updateProject = async (req: Request, res: Response) => {
       };
 
       try {
-        await projectService.updateProject(params);
+        await projectService.updateProjects(params);
         req.flash("alertMessage", "Successfully update project without image");
         req.flash("alertTitle", "Success");
         req.flash("alertStatus", "green");
@@ -139,7 +140,7 @@ const updateProject = async (req: Request, res: Response) => {
         slug: slugs,
         client: clientId,
       };
-      await projectService.updateProject(params);
+      await projectService.updateProjects(params);
       req.flash("alertMessage", "Successfully update project");
       req.flash("alertTitle", "Success");
       req.flash("alertStatus", "green");

@@ -1,7 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
-import { countProject, deleteProject, getAllProject, saveProject } from "../repository/projectRepository";
+import { countProject, deleteProject, getAllProject, saveProject, updateProject, findProjectById } from "../repository/projectRepository";
 import { findById } from "../repository/userRepository";
+import slug from "slug";
+import fs from "fs-extra";
+import path from "path";
+import { findImageById } from "../repository/imageRepository";
+
+
 
 const prisma = new PrismaClient();
 
@@ -14,6 +20,7 @@ const createProject = async (params: any) => {
     if (!params.name || !params.slug || !params.description) {
       throw new Error("Missing required fields");
     }
+
     const project = await saveProject(params);
 
     return project;
@@ -61,7 +68,7 @@ const getProjectById = async (id: number) => {
   }
 };
 
-const updateProject = async (params: any) => {
+const updateProjectss = async (params: any) => {
   try {
     const project = await prisma.project.update({
       where: {
@@ -88,10 +95,17 @@ const deleteProjects = async (id: number) => {
       throw new Error("Missing required fields");
     }
 
-    const checkProject = await findById(id);
+    const checkProject: any = await findProjectById(id);
 
     if (!checkProject) {
       throw new Error("Project not found");
+    }
+
+    const getImage: any = await findImageById(checkProject.id);
+    if (getImage) {
+      console.log("delete project", getImage);
+      const deleteImgPath = `public/${getImage.pathImg}`;
+        await fs.unlink(path.join(deleteImgPath));
     }
 
     const project = await deleteProject(id);
@@ -106,11 +120,40 @@ const deleteProjects = async (id: number) => {
     throw error;
   }
 };
+
+const updateProjects = async (params: any) => {
+  try {
+    if (!params.id) {
+      throw new Error("Missing required fields");
+    }
+
+    const checkProject: any = await findProjectById(params.id);
+    if (!checkProject) {
+      throw new Error("Project not found");
+    }
+
+    const getImage: any = await findImageById(checkProject.id);
+    if (getImage) {
+      console.log("checkProject", getImage);
+      const oldImagePath = `public/${getImage.pathImg}`;
+        await fs.unlink(path.join(oldImagePath));
+    }
+
+    const updatedProject = await updateProject(params);
+
+    return updatedProject;
+  } catch (error) {
+    console.error("Error in updateProjects:", error);
+    throw error;
+  }
+};
+
+
 export {
   createProject,
   getAllProjects,
   getProjectById,
-  updateProject,
+  updateProjects,
   deleteProjects,
   countProjects,
 };

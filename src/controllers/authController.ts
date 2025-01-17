@@ -17,7 +17,7 @@ const userLogin = async (req: Request, res: Response) => {
     if (user) {
       const isMatch = await bcrypt.compare(decryptedPassword, user.password);
       if (isMatch) {
-        const token = jwt.sign({ email, user: user.name }, <Secret>secret, {
+        const token = jwt.sign({ email, user: user.name, id: user.id }, <Secret>secret, {
           expiresIn: "1h",
         });
          

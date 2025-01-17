@@ -44,14 +44,15 @@ const authMiddlewares = (req: Request, res: Response, next: NextFunction) => {
   if (!token) {
     return res
       .status(401)
-      .json({ message: "Token tidak tesedia, access denied" });
+      .json({ message: "Token not provided" });
   }
 
   try {
     let secret = process.env.TOKEN_SECRET;
     jwt.verify(token, <Secret>secret, (err, decoded) => {
+      req.decoded = decoded;
       if (err) {
-        return res.status(401).json({ message: "Token tidak valid" });
+        return res.status(401).json({ message: "Token invalid" });
       }
       next();
     });
