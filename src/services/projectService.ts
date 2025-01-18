@@ -56,11 +56,8 @@ const countProjects = async () => {
 };
 const getProjectById = async (id: number) => {
   try {
-    const project = await prisma.project.findUnique({
-      where: {
-        id,
-      },
-    });
+    const project = await findProjectById(id);
+    
     return project;
   } catch (error) {
     console.log("Error", error);
@@ -103,7 +100,6 @@ const deleteProjects = async (id: number) => {
 
     const getImage: any = await findImageById(checkProject.id);
     if (getImage) {
-      console.log("delete project", getImage);
       const deleteImgPath = `public/${getImage.pathImg}`;
         await fs.unlink(path.join(deleteImgPath));
     }
@@ -134,7 +130,6 @@ const updateProjects = async (params: any) => {
 
     const getImage: any = await findImageById(checkProject.id);
     if (getImage) {
-      console.log("checkProject", getImage);
       const oldImagePath = `public/${getImage.pathImg}`;
         await fs.unlink(path.join(oldImagePath));
     }

@@ -5,6 +5,7 @@ import * as blogController from "../controllers/blogController";
 import * as apiProjectController from "../controllers/api/projectController";
 import * as apiBlogController from "../controllers/api/blogController";
 import * as apiUserController from "../controllers/api/userController";
+import * as apiClientController from "../controllers/api/clientController";
 import dotenv from "dotenv";
 import authMiddleware from "../middleware/authMiddleware";
 import rateLimiter from "../middleware/rateLimiter";
@@ -17,9 +18,9 @@ const router = express.Router();
 router.post("/auth/adminSigninEnc", rateLimiter.limiter, authController.userLogin);
 router.post("/testDes", authController.decryptTest);
 
-//API-PROJECT
+//API-PROJECT-DONE
 router.get("/v1/project", apiProjectController.getAllProject);
-router.get("/v1/project/:id", apiProjectController.getAllProject);
+router.get("/v1/project/:id", apiProjectController.getProjectById);
 router.post("/v1/project", upload("images").single("img"), authMiddleware.authMiddlewares, apiProjectController.createProject);
 router.put("/v1/project/:id", upload("images").single("img"),authMiddleware.authMiddlewares, apiProjectController.updateProject);
 router.delete("/v1/project/:id", authMiddleware.authMiddlewares, apiProjectController.deleteProject);
@@ -36,10 +37,10 @@ router.get("/v1/users", authMiddleware.authMiddlewares, apiUserController.getAll
 router.post("/v1/user", apiUserController.createUser);
 
 //API-CLIENT
-router.get("/v1/client", apiProjectController.getAllProject);
-router.get("/v1/client/:id", apiProjectController.getAllProject);
-router.post("/v1/client", authMiddleware.authMiddlewares, apiProjectController.getAllProject);
-router.put("/v1/client/:id", authMiddleware.authMiddlewares, apiProjectController.getAllProject);
-router.delete("/v1/client/:id", authMiddleware.authMiddlewares, apiProjectController.getAllProject);
+router.get("/v1/client", apiClientController.getAllClient);
+router.get("/v1/client/:id", apiClientController.getClientById);
+router.post("/v1/client", authMiddleware.authMiddlewares, upload("images").single("img"), apiClientController.createClient);
+router.put("/v1/client/:id", authMiddleware.authMiddlewares, upload("images").single("img"), apiClientController.updateClient);
+router.delete("/v1/client/:id", authMiddleware.authMiddlewares, apiClientController.deleteClient);
 
 export default router;

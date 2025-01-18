@@ -13,7 +13,7 @@ const postClient = async (req: Request, res: Response) => {
       path_logo: pathLogo,
     };
 
-    const data = await clientService.createClient(params);
+    const data = await clientService.createClients(params);
     console.log("success", data);
 
     return res.redirect("/admin/client");
@@ -33,7 +33,8 @@ const viewClient = async (req: Request, res: Response) => {
       status: alertStatus,
       title: alertTitle,
     };
-    const data = await clientService.getAllClient();
+    // const data = await clientService.getAllClient();
+    const data = {}
     if (!data) {
       return res.status(404).json({ message: "Client not found" });
     }
@@ -61,7 +62,7 @@ const updateClient = async (req: Request, res: Response) => {
         id: ids,
         name: name,
       };
-      await clientService.updateClient(params);
+      await clientService.updateClients(params);
       req.flash("alertMessage", "Successfully update client without image");
       req.flash("alertTitle", "Success");
       req.flash("alertStatus", "green");
@@ -73,7 +74,7 @@ const updateClient = async (req: Request, res: Response) => {
         name: name,
         path_logo: pathLogo,
       };
-      await clientService.updateClient(params);
+      await clientService.updateClients(params);
       req.flash("alertMessage", "Successfully update client");
       req.flash("alertTitle", "Success");
       req.flash("alertStatus", "green");
@@ -103,7 +104,7 @@ const deleteClient = async (req: Request, res: Response) => {
       }
     });
 
-    await clientService.deleteClient(params);
+    await clientService.deleteClients(params);
     req.flash("alertMessage", "Successfully delete client");
     req.flash("alertTitle", "Delete");
     req.flash("alertStatus", "red");

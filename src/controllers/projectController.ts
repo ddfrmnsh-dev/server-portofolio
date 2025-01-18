@@ -26,7 +26,7 @@ const viewProject = async (req: Request, res: Response) => {
     const order = req.query.order || "asc";
     const offset = (page - 1) * limit;
     const getProject = await projectService.getAllProjects(limit, offset, order);
-    const getClient = await clientService.getAllClient();
+    const getClient = await clientService.getAllClients(limit, offset, order);
     const totalProjects: any = await projectService.countProjects();
     const totalPages = Math.ceil(totalProjects / limit);
 

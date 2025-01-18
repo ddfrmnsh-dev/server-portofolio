@@ -38,6 +38,27 @@ const getAllProject = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
+const getProjectById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const projectId = parseInt(req.params.id);
+    const project = await projectService.getProjectById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ status: false, message: "Project not found" });
+    }
+
+    return res.json(apiResponse("Get project by ID", 200, "Success", project));
+
+    } catch (error: any) {
+    const errorMessage = error.message || 'An unexpected error occurred';
+
+    if(errorMessage) {
+      res.status(400).json({ status: false, error: errorMessage });
+    } else {
+      res.status(500).json({ status: false, error: 'Internal server error'});
+    }
+  }
+}
 const createProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, description, link, clientId } = req.body;
@@ -45,8 +66,6 @@ const createProject = async (req: Request, res: Response, next: NextFunction) =>
       const id = req.decoded.id;
 
       const image = req.file;
-
-      console.log("image:", image);
       
       let params: any = {
         name: name,
@@ -101,52 +120,6 @@ const deleteProject = async (req: Request, res: Response, next: NextFunction) =>
   }
 }
 
-// const updateProject = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//       const { id } = req.params;
-//       const { name, description, link, clientId } = req.body;
-//       const client = parseInt(clientId);
-//       const idUser = req.decoded.id;
-//       const image = req.files as Express.Multer.File[];
-//       let params: any = {
-//         id: id,
-//         name: name,
-//         description: description,
-//         link: link,
-//         clientId: client,
-//         userId: idUser,
-//       };
-
-//       if (image !== undefined){
-//         let params: any = {
-//           id: id,
-//           name: name,
-//           description: description,
-//           link: link,
-//           clientId: client,
-//           userId: idUser,
-//           files: image,
-//         };
-
-//         await projectService.updateProjects(params);
-//       } 
-
-//       const item: any = await projectService.updateProjects(params);
-//       // if (!item) {
-//       //   throw new Error("Project tidak ditemukan");
-//       // }
-//       return res.json(apiResponse("Successfully update project", 200, "Success", item));
-//   } catch (error: any) {
-//       console.error(error);
-//       const errorMessage = error.message || 'An unexpected error occurred';
-//       if(errorMessage) {
-//         res.status(400).json({ status: false, error: errorMessage });
-//       } else {
-//         res.status(500).json({ status: false, error: 'Internal server error'});
-//       }
-//   }
-// }
-
 const updateProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
@@ -155,7 +128,6 @@ const updateProject = async (req: Request, res: Response, next: NextFunction) =>
     const idProject = parseInt(id);
     const idUser = req.decoded.id;
     const images = req.file
-    // Siapkan parameter dasar
     const params: any = {
       id: idProject,
       name,
@@ -165,20 +137,16 @@ const updateProject = async (req: Request, res: Response, next: NextFunction) =>
       userId: idUser,
     };
 
-    // Tambahkan files ke params jika ada
     if (images !== undefined) {
       params.files = images;
     }
 
-    // Panggil service untuk memperbarui project
     const item: any = await projectService.updateProjects(params);
 
-    // Berikan respon sukses
     return res.json(apiResponse("Successfully updated project", 200, "Success", item));
   } catch (error: any) {
     console.error(error);
 
-    // Tangani error dengan format respons yang konsisten
     const errorMessage = error.message || "An unexpected error occurred";
     const statusCode = errorMessage.includes("not found") ? 404 : 400;
     return res.status(statusCode).json({
@@ -188,4 +156,4 @@ const updateProject = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-export { getAllProject, createProject, deleteProject, updateProject }
+export { getAllProject, getProjectById,createProject, deleteProject, updateProject }

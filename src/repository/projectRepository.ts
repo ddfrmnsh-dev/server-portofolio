@@ -24,7 +24,6 @@ const getAllProject = async (limit: number, offset: number, order: any) => {
 const saveProject = async (params: any) => {
     try {
         const files = params.files;
-        console.log("id params", params.userId);
         const project = await prisma.$transaction(async (prisma) => {
           const newProject = await prisma.project.create({
             data: {
@@ -36,13 +35,6 @@ const saveProject = async (params: any) => {
               slug: params.slug,
             },
           });
-          
-
-          console.log("Creating image with data:", {
-            name: files.filename,
-            pathImg: `images/${files.filename}`,
-            projectId: newProject.id,
-          });
 
           await prisma.image.create({
             data: {
@@ -51,17 +43,6 @@ const saveProject = async (params: any) => {
                 pathImg: `images/${files.filename}`,
             },
           });
-          // const imagePromises = Object.values(files as { filename: string }[]).map(file =>
-          //   prisma.image.create({
-          //     data: {
-          //       name: file.filename,
-          //       projectId: newProject.id,
-          //       pathImg: `images/${file.filename}`
-          //     },
-          //   })
-          // );
-    
-          // await Promise.all(imagePromises);
         });
 
         return project;
@@ -102,22 +83,6 @@ const updateProject = async (params: any) => {
               userId: params?.userId,
             },
           });
-    
-          // if (files && files.length > 0) {
-          //   const updateImagePromises = files.map((file: any) =>
-          //     prisma.image.updateMany({
-          //       where: {
-          //         projectId: params.id,
-          //       },  
-          //       data: {
-          //         name: file.filename,
-          //         pathImg: `images/${file.filename}`,
-          //       },
-          //     })
-          //   );
-
-          //   await Promise.all(updateImagePromises);
-          // }
 
           if (files && files != undefined) {
             const images: any = await prisma.image.findMany({
@@ -135,21 +100,7 @@ const updateProject = async (params: any) => {
                 pathImg: `images/${files.filename}`,
               },
             });
-          
-            // const updateImagePromises = images.map((image, index) => {
-            //   const file = files[index];
-            //   return prisma.image.update({
-            //     where: {
-            //       id: image.id,
-            //     },
-            //     data: {
-            //       name: file.filename,
-            //       pathImg: `images/${file.filename}`,
-            //     },
-            //   });
-            // });
-          
-            // await Promise.all(updateImagePromises);
+            
           }          
         });
 
