@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const getAllProject = async (limit: number, offset: number, order: any) => {
+const findAllProject = async (limit: number, offset: number, order: any) => {
   try {
     const projects = await prisma.project.findMany({
       take: limit,
@@ -140,4 +140,4 @@ const countProject = async () => {
 };
 
 
-export { getAllProject, saveProject, findProjectById, deleteProject, countProject, updateProject };
+export { findAllProject, saveProject, findProjectById, deleteProject, countProject, updateProject };

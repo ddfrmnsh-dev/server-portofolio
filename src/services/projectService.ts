@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
-import { countProject, deleteProject, getAllProject, saveProject, updateProject, findProjectById } from "../repository/projectRepository";
+import { countProject, deleteProject, findAllProject, saveProject, updateProject, findProjectById } from "../repository/projectRepository";
 import { findById } from "../repository/userRepository";
 import slug from "slug";
 import fs from "fs-extra";
@@ -32,7 +32,7 @@ const createProject = async (params: any) => {
 
 const getAllProjects = async (take: number, skip: number, order: any) => {
   try {
-    const project = await getAllProject(take, skip, order);
+    const project = await findAllProject(take, skip, order);
     
     if (!project) {
       throw new Error("Project not found");
@@ -57,7 +57,7 @@ const countProjects = async () => {
 const getProjectById = async (id: number) => {
   try {
     const project = await findProjectById(id);
-    
+
     return project;
   } catch (error) {
     console.log("Error", error);

@@ -28,8 +28,8 @@ router.delete("/v1/project/:id", authMiddleware.authMiddlewares, apiProjectContr
 //API-BLOG
 router.get("/v1/blog", apiBlogController.getAllBlog);
 router.get("/v1/blog/:id", apiBlogController.getAllBlog);
-router.post("/v1/blog", authMiddleware.authMiddlewares, blogController.createBlog);
-router.put("/v1/blog/:id", authMiddleware.authMiddlewares, blogController.updateStatus);
+router.post("/v1/blog", authMiddleware.authMiddlewares, upload("images").array("img"), apiBlogController.createBlog);
+router.put("/v1/blog/:id", authMiddleware.authMiddlewares, upload("images").array("img"), apiBlogController.updateBlog);
 router.post("/v1/blog/:slug", authMiddleware.authMiddlewares, apiBlogController.getSingleBlog);
 
 //API-USER
