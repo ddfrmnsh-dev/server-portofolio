@@ -371,42 +371,7 @@ const findById = async (id: number) => {
 
 const findBySlug = async (slug: string) => {
   try {
-    const post = await prisma.post.findUnique({
-      where: {
-        slug,
-      },
-      include: {
-        categories: {
-          select: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-              },
-            },
-          },
-        },
-        author: {
-          select: {
-            name: true,
-            profession: true,
-            image: {
-              select: {
-                id: true,
-                pathImg: true,
-              },
-            },
-          },
-        },
-        image: {
-          select: {
-            id: true,
-            pathImg: true,
-          },
-        },
-      },
-    });
+    const post = await findPostBySlug(slug);
 
     return post;
   } catch (error) {

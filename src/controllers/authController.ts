@@ -31,6 +31,7 @@ const userLogin = async (req: Request, res: Response) => {
               email: user.email,
               createdAt: user.createdAt,
               updatedAt: user.updatedAt,
+              pathImg: user?.pathImg
             },
             token: `Bearer ${token}`,
           })

@@ -10,6 +10,14 @@ const findAllClient = async (limit: number, offset: number, order: any) => {
           orderBy: {
             createdAt: order,
           },
+          include: {
+            project: true,
+            _count: {
+              select: {
+                project: true,
+              },
+            }
+          }
         });
         return client;
       } catch (error) {

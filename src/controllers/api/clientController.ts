@@ -61,6 +61,7 @@ const createClient = async (req: Request, res: Response, next: NextFunction) => 
         const {name} = req.body;
         const image = req.file;
 
+        console.log("chck obj img",image);
         let params :any = {
             name,
             files: image?.filename

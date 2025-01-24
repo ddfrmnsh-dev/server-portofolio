@@ -101,7 +101,6 @@ const countClient = async () => {
     return error;
   }
 }
-
 export {
   createClients,
   getAllClients,

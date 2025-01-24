@@ -73,4 +73,21 @@ const createUser = async (req: Request, res: Response) => {
   }
 }
 
-export { getAllUser, createUser };
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    if (!id) {
+      return res.status(400).json({ error: "Id is required" });
+    }
+
+    const ids = parseInt(id);
+    const user = await userService.deleteUser(ids);
+    return res.status(200).json(apiResponse("delete user", 200, "success", user));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error });
+  }
+}
+
+export { getAllUser, createUser, deleteUser };
