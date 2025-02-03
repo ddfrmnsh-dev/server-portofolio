@@ -33,7 +33,7 @@ model Project {
   id            Int       @id @default(autoincrement())
   name          String?
   slug          String?
-  description   String?   @db.Text
+  description   String?   @db.LongText
   linkWebsite   String?   @map("link_website")
   userId        Int       @map("user_id")
   author        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -70,7 +70,7 @@ model Client {
 model Post {
   id               Int        @id @default(autoincrement())
   title            String?
-  description      String?
+  description      String?    
   content          String?    @db.LongText
   slug             String?    @unique
   published        Boolean    @default(false)

@@ -16,12 +16,10 @@ const getAllProject = async (req: Request, res: Response, next: NextFunction) =>
     if (totalProjects === 0) {
       return res.status(404).json({status: false, message: "Project not found" });
     }
-    
-    const totalPages = Math.ceil(totalProjects / limit);
 
     const data: any = {
       projects,
-      total: totalPages,
+      total: totalProjects,
       page: page,
       limit: limit,
     };

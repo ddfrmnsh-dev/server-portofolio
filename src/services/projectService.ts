@@ -6,6 +6,7 @@ import slug from "slug";
 import fs from "fs-extra";
 import path from "path";
 import { findImageById } from "../repository/imageRepository";
+import { unlinkSync } from "fs";
 
 
 
@@ -99,9 +100,23 @@ const deleteProjects = async (id: number) => {
     }
 
     const getImage: any = await findImageById(checkProject.id);
-    if (getImage) {
-      const deleteImgPath = `public/${getImage.pathImg}`;
-        await fs.unlink(path.join(deleteImgPath));
+    if (getImage?.pathImg) {
+      const deleteImgPath = path.join("public", getImage.pathImg);
+    
+      // Cek apakah file benar-benar ada sebelum menghapus
+      if (fs.existsSync(deleteImgPath)) {
+        try {
+          await fs.unlink(deleteImgPath);
+          // await unlinkSync(deleteImgPath);
+          console.log(`File deleted: ${deleteImgPath}`);
+        } catch (error) {
+          console.error("Error deleting file:", error);
+        }
+      } else {
+        console.warn(`File not found, skipping delete: ${deleteImgPath}`);
+      }
+    } else {
+      console.warn("Image path is undefined, skipping delete.");
     }
 
     const project = await deleteProject(id);

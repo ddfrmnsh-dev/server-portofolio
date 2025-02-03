@@ -38,7 +38,7 @@ const getClientById = async (id: number) => {
     return data;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 
@@ -80,7 +80,11 @@ const deleteClients = async (id: number) => {
 
     if(checkClient) {
       const deleteImgPath = `public/${checkClient.pathLogo}`;
-      await fs.unlink(path.join(deleteImgPath));
+      try {
+        await fs.unlink(path.join(deleteImgPath));
+      } catch (error) {
+        console.error("Error deleting file:", error);
+      }
     }
 
     const data = await deleteClient(id);

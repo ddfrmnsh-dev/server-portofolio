@@ -15,10 +15,9 @@ const getAllClient = async (req: Request, res: Response, next: NextFunction) => 
             return res.status(404).json({status: false, message: "Client not found" });
         }
 
-        const totalPages = Math.ceil(totalClients / limit);
         const data: any = {
             clients,
-            total: totalPages,
+            total: totalClients,
             page: page,
             limit: limit,
         };
@@ -61,7 +60,6 @@ const createClient = async (req: Request, res: Response, next: NextFunction) => 
         const {name} = req.body;
         const image = req.file;
 
-        console.log("chck obj img",image);
         let params :any = {
             name,
             files: image?.filename

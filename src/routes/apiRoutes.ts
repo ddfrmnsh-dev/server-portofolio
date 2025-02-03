@@ -35,6 +35,7 @@ router.get("/v1/blog/:slug", apiBlogController.getSingleBlog);
 //API-USER
 router.get("/v1/users", authMiddleware.authMiddlewares, apiUserController.getAllUser);
 router.post("/v1/user", apiUserController.createUser);
+router.put("/v1/editUser", apiUserController.createUser);
 router.delete("/v1/user/:id", authMiddleware.authMiddlewares, apiUserController.deleteUser);
 
 //API-CLIENT

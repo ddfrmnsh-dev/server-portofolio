@@ -12,7 +12,6 @@ const getAllUser = async (req: Request, res: Response) => {
 
     let user = await userService.getAllUser(limit, offset, order);
 
-    console.log(user);
     const totalUsers: any = await userService.countUser();
 
     const activeUsers: any = await userService.countUserActive()

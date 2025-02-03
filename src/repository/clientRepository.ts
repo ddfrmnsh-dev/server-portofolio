@@ -81,14 +81,14 @@ const findClientById = async (id: number) => {
         return client;
       } catch (error) {
         console.log("Error", error);
-        return error;
+        throw error;
       }
 }
 
 const countAllClient = async () => {
     try {
-        const projects = await prisma.client.count();
-        return projects;
+        const clients = await prisma.client.count();
+        return clients;
       } catch (error) {
         console.log("Error", error);
         return error;
