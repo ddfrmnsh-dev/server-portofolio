@@ -7,9 +7,9 @@ import { User } from "@prisma/client";
 let secret = process.env.TOKEN_SECRET
 
 const createNewUser = async (req: Request, res: Response) => {
-    const {name, email, password} = req.body;
+    const {name, email, password, username} = req.body;
     try {
-        const user = await userService.createUser(name, email, password);
+        const user = await userService.createUser(name, email, password, username);
         res.status(201).json(user);
     } catch (error) {
         res.status(500).json({error :"Error"});
