@@ -127,7 +127,6 @@ const updateProject = async (req: Request, res: Response, next: NextFunction) =>
     const idUser = req.decoded.id;
     const images = req.file
     const params: any = {
-      id: idProject,
       name,
       description,
       link,
@@ -135,11 +134,11 @@ const updateProject = async (req: Request, res: Response, next: NextFunction) =>
       userId: idUser,
     };
 
-    if (images !== undefined) {
-      params.files = images;
+    if (images !== undefined && images !== null) {
+      params.files = images.filename;
     }
 
-    const item: any = await projectService.updateProjects(params);
+    const item: any = await projectService.updateProjects(params, idProject);
 
     return res.json(apiResponse("Successfully updated project", 200, "Success", item));
   } catch (error: any) {

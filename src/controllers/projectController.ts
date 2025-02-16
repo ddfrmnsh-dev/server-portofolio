@@ -117,7 +117,7 @@ const updateProject = async (req: Request, res: Response) => {
       };
 
       try {
-        await projectService.updateProjects(params);
+        await projectService.updateProjects(params, id);
         req.flash("alertMessage", "Successfully update project without image");
         req.flash("alertTitle", "Success");
         req.flash("alertStatus", "green");
@@ -140,7 +140,7 @@ const updateProject = async (req: Request, res: Response) => {
         slug: slugs,
         client: clientId,
       };
-      await projectService.updateProjects(params);
+      await projectService.updateProjects(params, id);
       req.flash("alertMessage", "Successfully update project");
       req.flash("alertTitle", "Success");
       req.flash("alertStatus", "green");

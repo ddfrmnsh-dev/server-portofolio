@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
 import { countProject, deleteProject, findAllProject, saveProject, updateProject, findProjectById } from "../repository/projectRepository";
-import { findById } from "../repository/userRepository";
+import { findUserById } from "../repository/userRepository";
 import slug from "slug";
 import fs from "fs-extra";
 import path from "path";
@@ -132,24 +132,43 @@ const deleteProjects = async (id: number) => {
   }
 };
 
-const updateProjects = async (params: any) => {
+const updateProjects = async (params: any, ids: number) => {
   try {
-    if (!params.id) {
+    if (!ids) {
       throw new Error("Missing required fields");
     }
 
-    const checkProject: any = await findProjectById(params.id);
+    const checkProject: any = await findProjectById(ids);
     if (!checkProject) {
       throw new Error("Project not found");
     }
 
-    const getImage: any = await findImageById(checkProject.id);
-    if (getImage) {
-      const oldImagePath = `public/${getImage.pathImg}`;
-        await fs.unlink(path.join(oldImagePath));
+    console.log("params.files", params.files);
+    if(params.files !== undefined && checkProject.image[0].pathImg) {
+      const splitPath = checkProject.image[0].pathImg.split("/");
+      const lastIndex = splitPath[splitPath.length - 1];
+
+      if (lastIndex !== "undefined") {
+            const deleteImgPath = path.join("public", checkProject.image[0].pathImg);
+            try {
+              await fs.unlink(deleteImgPath);
+              console.log(`Deleted old image: ${deleteImgPath}`);
+            } catch (err) {
+              console.error(`Failed to delete old image: ${deleteImgPath}`, err);
+            }
+      }
     }
 
-    const updatedProject = await updateProject(params);
+
+    // const getImage: any = await findImageById(checkProject.id);
+    // if (getImage) {
+    //   const oldImagePath = `public/${getImage.pathImg}`;
+    //     await fs.unlink(path.join(oldImagePath));
+    // }
+
+    const updatedParams = { ...params, files: params.files ? params.files : checkProject.image[0].pathImg };
+
+    const updatedProject = await updateProject(updatedParams, ids);
 
     return updatedProject;
   } catch (error) {

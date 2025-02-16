@@ -58,6 +58,10 @@ const findProjectById = async (id: number) => {
       where: {
         id,
       },
+      include: {
+        client: true,
+        image: true,
+      }
     });
     return project;
   } catch (error) {
@@ -66,28 +70,36 @@ const findProjectById = async (id: number) => {
   }
 };
 
-const updateProject = async (params: any) => {
+const updateProject = async (params: any, ids: number) => {
   try {
       const files = params.files;
         const project = await prisma.$transaction(async (prisma) => {
           await prisma.project.update({
             where: {
-              id: params.id,
+              id: ids,
             },
             data: {
               name: params.name,
-              slug: params.slug,
               description: params.description,
               linkWebsite: params.link,
-              clientId: params?.clientId,
-              userId: params?.userId,
-            },
+              author: {
+                connect: {
+                  id: params.userId,
+                },
+              },
+              slug: params.slug,
+              client: {
+                connect: {
+                  id: params.clientId,
+                },
+              }
+            }
           });
 
           if (files && files != undefined) {
             const images: any = await prisma.image.findMany({
               where: {
-                projectId: params.id,
+                projectId: ids,
               },
             });
 
@@ -96,8 +108,8 @@ const updateProject = async (params: any) => {
                 id: images[0].id,
               },
               data: {
-                name: files.filename,
-                pathImg: `images/${files.filename}`,
+                name: files,
+                pathImg: `images/${files}`,
               },
             });
             
