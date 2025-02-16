@@ -85,12 +85,14 @@ const updateClient = async (req: Request, res: Response, next: NextFunction) => 
         const { name } = req.body;
         const images = req.file;
 
+        console.log("images controller",images);
+
         let params: any = {
             id: parseInt(id),
             name,
         }
 
-        if(images !== undefined) {
+        if(images != undefined && images != null) {
             params.files = images?.filename;
         }
 

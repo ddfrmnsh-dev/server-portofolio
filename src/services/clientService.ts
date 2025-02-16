@@ -42,24 +42,41 @@ const getClientById = async (id: number) => {
   }
 };
 
+
 const updateClients = async (params: any) => {
   try {
     if (!params.id) {
       throw new Error("Missing required fields");
     }
 
-    const checkClient:any = await findClientById(params.id);
+    const checkClient: any = await findClientById(params.id);
     if (!checkClient) {
       throw new Error("Client not found");
     }
 
-    if(params.files) {
-      const deleteImgPath = `public/${checkClient.pathLogo}`;
-      await fs.unlink(path.join(deleteImgPath));
+    // Jika ada file baru, hapus gambar lama
+    if (params.files !== undefined && checkClient.pathLogo) {
+      const splitPath = checkClient.pathLogo.split("/");
+      const lastIndex = splitPath[splitPath.length - 1];
+
+      if (lastIndex !== "undefined") {
+        const deleteImgPath = path.join("public", checkClient.pathLogo);
+        try {
+          await fs.unlink(deleteImgPath);
+          console.log(`Deleted old image: ${deleteImgPath}`);
+        } catch (err) {
+          console.error(`Failed to delete old image: ${deleteImgPath}`, err);
+        }
+      }
     }
 
-    const data = await updateClient(params);
+    // Pastikan jika params.files tidak diberikan, tetap gunakan pathLogo lama
+    const updatedParams = {
+      ...params,
+      files: params.files ? params.files : checkClient.pathLogo.split("/").pop()
+    };
 
+    const data = await updateClient(updatedParams);
     return data;
   } catch (error) {
     console.log("Error", error);

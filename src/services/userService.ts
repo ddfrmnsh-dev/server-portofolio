@@ -1,7 +1,8 @@
 import { PrismaClient, User } from "@prisma/client";
 // import { Request, Response,NextFunction } from "express";
 import bycrypt from "bcrypt";
-import { findByEmail, saveUser } from "../repository/userRepository";
+import { findByEmail, findUserById, saveUser, updateUsers } from "../repository/userRepository";
+import { get } from "http";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +10,7 @@ export interface CreateUserError extends Error {
   statusCode?: number;
 }
 
-const createUser = async (name: string, email: string, password: string) => {
+const createUser = async (name: string, email: string, password: string, username: string) => {
   try {
     if (!name || !email || !password) {
       throw new Error('Name, email, and password are required');
@@ -25,7 +26,7 @@ const createUser = async (name: string, email: string, password: string) => {
     }
 
     const hashedPassword = await bycrypt.hash(password, 10);
-    const user = await saveUser(name, email, hashedPassword);
+    const user = await saveUser(name, email, hashedPassword, username);
 
     return user;
   } catch (error) {
@@ -179,6 +180,76 @@ const countUserActive = async () => {
     return error;
   }
 }
+
+const updateUserById = async (params: any, id: number) => {
+  try {
+    console.log("paramsa isactive", params.isActive);
+    if (params.name === "" && params.email === "" && params.username === "") {
+      throw new Error("Name, username, and email are required");
+    }
+
+    const findUser: any = await getUserById(id);
+
+    if (!findUser){
+      throw new Error("User not found");
+    }
+
+    let updateUser:any = {}
+
+    if(params.name !== findUser.name) {
+      updateUser.name = params.name
+    }
+
+    if(params.email !== findUser.email) {
+      updateUser.email = params.email
+    } 
+
+    if(params.username !== findUser.username) {
+      updateUser.username = params.username
+    }
+
+    if(params.profession !== findUser.profession) {
+      updateUser.profession = params.profession
+    }
+
+    if(params.isActive !== findUser.isActive) {
+      console.log("params active in", params.isActive);
+      updateUser.isActive = params.isActive
+    }
+
+    if(params.password && params.password.trim() !== ""){
+      const isMatch = await bycrypt.compare(params.password, findUser.password)
+      if(!isMatch){
+        const hashPwd = await bycrypt.hash(params.password, 10);
+        updateUser.password = hashPwd
+      }
+    }
+
+    if (Object.keys(updateUser).length === 0) {
+      throw new Error("No fields to update");
+    }
+
+    const data = await updateUsers(updateUser, id) 
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getUserById = async (id:number) => {
+  try {
+    const data = await findUserById(id)
+
+    if (!data) {
+      throw new Error("User not found");
+    }
+
+    return data
+  } catch (error) {
+    throw error
+  }
+}
 export {
   countUserActive,
   countUser,
@@ -188,4 +259,6 @@ export {
   updateUser,
   deleteUser,
   getAllUser,
+  updateUserById,
+  getUserById
 };

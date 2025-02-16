@@ -34,9 +34,11 @@ router.get("/v1/blog/:slug", apiBlogController.getSingleBlog);
 
 //API-USER
 router.get("/v1/users", authMiddleware.authMiddlewares, apiUserController.getAllUser);
+router.get("/v1/user/:id", authMiddleware.authMiddlewares, apiUserController.getUserById);
 router.post("/v1/user", apiUserController.createUser);
 router.put("/v1/editUser", apiUserController.createUser);
 router.delete("/v1/user/:id", authMiddleware.authMiddlewares, apiUserController.deleteUser);
+router.put("/v1/user/:id", authMiddleware.authMiddlewares, apiUserController.updateUserById);
 
 //API-CLIENT
 router.get("/v1/client", apiClientController.getAllClient); //done
@@ -45,4 +47,6 @@ router.post("/v1/client", authMiddleware.authMiddlewares, upload("images").singl
 router.put("/v1/client/:id", authMiddleware.authMiddlewares, upload("images").single("img"), apiClientController.updateClient); //done
 router.delete("/v1/client/:id", authMiddleware.authMiddlewares, apiClientController.deleteClient); //done
 
+//TEST-REDIS
+router.post("/publish", authController.publishMessage)
 export default router;
