@@ -14,14 +14,19 @@ import createError from "http-errors";
 import { errorHandler } from "./src/middleware/errorHandler";
 import rateLimit from "express-rate-limit";
 import healthCheckMiddleware from "./src/middleware/healthCheckMiddleware";
-
+import { connectRedis } from "./src/utils/redis";
+import { startSubscriber, subscribeToNotifications } from "./src/services/redisSubsService";
+import { initSocket } from "./src/utils/socket";
+import { createServer } from "http";
 const app = express();
 const router = express.Router();
+const server = createServer(app); 
 
 const corsOptions = {
   // origin: ["https://ddfrmnsh.tech"],
   origin: ["http://localhost:5173", "https://ddfrmnsh.tech"],
   optionsSuccessStatus: 200,
+  credentials: true,
 };
 
 // const limiter = rateLimit({
@@ -82,5 +87,15 @@ app.use((req, res) => {
     message: `The requested URL ${req.originalUrl} was not found on this server.`,
   });
 });
+
+// const startServer = async () => {
+//   await connectRedis(); // Menunggu koneksi Redis sebelum menjalankan server
+//   console.log("✅ Redis Connected");
+//   await startSubscriber();
+//   await subscribeToNotifications();
+//   // initSocket(server); 
+// };
+
+// startServer();
 
 export default app;
