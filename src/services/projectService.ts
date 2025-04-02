@@ -5,8 +5,9 @@ import { findUserById } from "../repository/userRepository";
 import slug from "slug";
 import fs from "fs-extra";
 import path from "path";
-import { findImageById } from "../repository/imageRepository";
+// import { findImageById } from "../repository/imageRepository";
 import { unlinkSync } from "fs";
+import { findImageProjectById } from "../repository/imageRepository";
 
 
 
@@ -99,7 +100,7 @@ const deleteProjects = async (id: number) => {
       throw new Error("Project not found");
     }
 
-    const getImage: any = await findImageById(checkProject.id);
+    const getImage: any = await findImageProjectById(checkProject.id);
     if (getImage?.pathImg) {
       const deleteImgPath = path.join("public", getImage.pathImg);
     

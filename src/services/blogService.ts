@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
-import { findAllPost, findPostBySlug, savePost, updatePostById } from "../repository/postRepository";
+import { findAllCatgeories, findAllPost, findPostBySlug, savePost, updatePostById } from "../repository/postRepository";
 import slug from "slug";
-import { findImagePostById } from "../repository/imageRepository";
+import { deleteImageById, findImagePostById, findImagePostSingle } from "../repository/imageRepository";
 import fs from "fs-extra";
 import path from "path";
 
@@ -20,7 +20,6 @@ const createPosts = async (params: any) => {
       for (let i = 0; i < categories.length; i++) {
         let slugCategory = slug(categories[i])
         let nameCategory = categories[i]
-        console.log("check name category",nameCategory)
         let categoryObj = {
           name: nameCategory,
           slug: slugCategory
@@ -31,6 +30,8 @@ const createPosts = async (params: any) => {
 
     let checkCategoryPost = await findOrCreateCategories(category)
     params.category = checkCategoryPost
+
+    params.status =  params.status === "1" ? true : false
 
     const checkSlugPost = await findPostBySlug(params.slug)
     if (checkSlugPost) {
@@ -55,7 +56,6 @@ const updatePosts = async (params: any) => {
     let addCategory = params.addCategory
     let removeCategory = params.removeCategory
 
-    console.log("img", params.addImage)
     // if(!Array.isArray(addCategory) || !Array.isArray(removeCategory)) {
     //   throw new Error("Categories must be an array");
     // }
@@ -72,7 +72,7 @@ const updatePosts = async (params: any) => {
         categoryAdd.push(categoryObj)
       }
     }
-
+    
     let checkCategoryPost = await findOrCreateCategories(categoryAdd)
     params.addCategory = checkCategoryPost
 
@@ -80,19 +80,26 @@ const updatePosts = async (params: any) => {
       await unlinkCategories(params.idPost, removeCategory)
     }
 
+    params.status = params.status === 1 ? true : false
+
     if(params?.removeImage) {
-      const checkImage: any = await findImagePostById(params?.removeImage)
-      if (checkImage && checkImage.length > 0) {
-        console.log("check image",checkImage)
-        for (const image of checkImage) {
-          const oldImagePath = `public/${image.pathImg}`;
-          try {
-              await fs.unlink(path.join(oldImagePath));
-            console.log(`Deleted image: ${image.pathImg}`);
-          } catch (err) {
-            console.error(`Failed to delete image: ${image.pathImg}`, err);
+      if(params.removeImage.length > 0) {
+        // for (let i=0; i<params.removeImage.length; i++) {
+          const checkImage: any = await findImagePostById(params?.removeImage)
+          if (checkImage && checkImage.length > 0) {
+            console.log("check image",checkImage)
+            for (const image of checkImage) {
+              const oldImagePath = `public/${image.pathImg}`;
+              try {
+                await deleteImageById(image.id);
+                await fs.unlink(path.join(oldImagePath));
+                console.log(`Deleted image: ${image.pathImg}`);
+              } catch (err) {
+                console.error(`Failed to delete image: ${image.pathImg}`, err);
+              }
+            }
           }
-        }
+        // }
       }
     }
 
@@ -231,6 +238,20 @@ const getAllPosts = async (take: number, skip: number, order: any) => {
   }
 };
 
+const getAllCatgory = async () => {
+  try {
+    const category = findAllCatgeories();
+
+    if (!category) {
+      throw new Error("No category found");
+    }
+
+    return category;
+  } catch (error) {
+    console.log("Error", error);
+    throw error
+  }
+}
 const countPost = async () => {
   try {
     const count = await prisma.post.count();
@@ -300,7 +321,7 @@ const unlinkCategories = async (postId: number, categoryIds: number[]) => {
   //   }
   // });
 
-  await prisma.categoryOnPost.deleteMany({
+  const res = await prisma.categoryOnPost.deleteMany({
     where: {
       postId: postId,
       categoryId: {
@@ -308,6 +329,8 @@ const unlinkCategories = async (postId: number, categoryIds: number[]) => {
       },
     },
   });
+
+  console.log("res", res);
 
 };
 
@@ -382,16 +405,31 @@ const findBySlug = async (slug: string) => {
 
 const deleteBlog = async (id: number) => {
   try {
-    const project = await prisma.post.delete({
+    const checkImg:any = await findImagePostSingle(id)
+    try {
+      const oldImagePath = `public/${checkImg?.pathImg}`;
+      try {
+        await fs.unlink(path.join(oldImagePath));
+        console.log(`Deleted image: ${oldImagePath}`);
+      } catch (err) {
+        console.error(`Failed to delete image: ${oldImagePath}`, err);
+      }
+    } catch (error) {
+      console.log("Error", error);
+      throw error;
+  }
+
+    const post = await prisma.post.delete({
       where: {
         id,
-      },
+      }
     });
-    return project;
-  } catch (error) {
-    console.log("Error", error);
-    return error;
-  }
+
+    return post;
+} catch (error) {
+  console.log("Error", error);
+  return error;
+}
 };
 export {
   findById,
@@ -406,5 +444,6 @@ export {
   countPost,
   createPosts,
   updatePosts,
-  unlinkCategories
+  unlinkCategories,
+  getAllCatgory
 };

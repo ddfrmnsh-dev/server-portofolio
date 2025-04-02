@@ -26,11 +26,14 @@ router.put("/v1/project/:id", upload("images").single("img"),authMiddleware.auth
 router.delete("/v1/project/:id", authMiddleware.authMiddlewares, apiProjectController.deleteProject);
 
 //API-BLOG
-router.get("/v1/blog", apiBlogController.getAllBlog); //done
-// router.get("/v1/blog/:id", apiBlogController.getAllBlog); //done
-router.post("/v1/blog", authMiddleware.authMiddlewares, upload("images").array("img"), apiBlogController.createBlog); //done
-router.put("/v1/blog/:id", authMiddleware.authMiddlewares, upload("images").array("img"), apiBlogController.updateBlog); //done
-router.get("/v1/blog/:slug", apiBlogController.getSingleBlog);
+router.get("/v1/category", apiBlogController.getAllCategory); //done
+router.get("/v1/post", apiBlogController.getAllBlog); //done
+router.get("/v1/post/:id", apiBlogController.getPostById); //done
+// router.get("/v1/post/:id", apiBlogController.getAllBlog); //done
+router.post("/v1/post", authMiddleware.authMiddlewares, upload("images").array("img"), apiBlogController.createPost); //done
+router.put("/v1/post/:id", authMiddleware.authMiddlewares, upload("images").array("img"), apiBlogController.updateBlog); //done
+router.get("/v1/post/:slug", apiBlogController.getSingleBlog);
+router.delete("/v1/post/:id", authMiddleware.authMiddlewares, apiBlogController.deletePost);
 
 //API-USER
 router.get("/v1/users", authMiddleware.authMiddlewares, apiUserController.getAllUser);

@@ -14,7 +14,7 @@ const savePost = async (params: any) => {
             title: params.title,
             slug: params.slug,
             content: params.content,
-            published: params?.published,
+            published: params?.status,
             authorId: params.authorId,
             description: params.description,
             categories: {
@@ -62,7 +62,7 @@ const updatePostById = async (params: any) => {
           title: params.title,
           slug: params.slug,
           content: params.content,
-          published: params?.published,
+          published: params?.status,
           authorId: params.authorId,
           description: params.description,
           categories: categoriesAdd.length > 0 ? {
@@ -73,6 +73,10 @@ const updatePostById = async (params: any) => {
                 },
               },
             })),
+            // connectOrCreate: categoriesAdd.map((categoryId: any) => ({
+            //   where: { categoryId  }, // Sesuai constraint unik
+            //   create: { postId: idPosts,categoryId },
+            // })),
           } : undefined,
         },
       });
@@ -109,7 +113,16 @@ const findAllPost = async (limit: number, offset: number, order: any) => {
       skip: offset,
       include: {
         author: true,
-        categories: true,
+        categories: {
+          select:{
+            category: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        },
         image: true,
       },
       orderBy: {
@@ -202,5 +215,19 @@ const findOrCreateCategories =  async (categories: any[]) => {
     }
 }
       
-
-export { findAllPost, countPost, findPostById, findPostBySlug, findOrCreateCategories, savePost, updatePostById };
+const findAllCatgeories = async () => {
+    try {
+        const categories = await prisma.category.findMany({
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          });
+        return categories;
+    } catch (error :any) {
+        console.log("Error", error);
+        throw error
+    }
+}
+export { findAllPost, countPost, findPostById, findPostBySlug, findOrCreateCategories, savePost, updatePostById, findAllCatgeories };

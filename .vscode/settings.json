@@ -1,0 +1,9 @@
+{
+    "conventionalCommits.scopes": [
+        "middleware",
+        "user",
+        "project",
+        "client",
+        "post"
+    ]
+}

@@ -24,7 +24,7 @@ const server = createServer(app);
 
 const corsOptions = {
   // origin: ["https://ddfrmnsh.tech"],
-  origin: ["http://localhost:5173", "https://ddfrmnsh.tech"],
+  origin: ["http://localhost:5174", "https://ddfrmnsh.tech"],
   optionsSuccessStatus: 200,
   credentials: true,
 };

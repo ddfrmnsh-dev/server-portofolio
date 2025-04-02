@@ -2,11 +2,38 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const findImageById = async (id: number) => {
+const findImageProjectById = async (id: number) => {
   try {
     const image = await prisma.image.findFirst({
       where: {
         projectId: id,
+      },
+    });
+    return image;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+};
+const findImagePostSingle = async (id: number) => {
+  try {
+    const image = await prisma.image.findFirst({
+      where: {
+        postId: id,
+      },
+    });
+    return image;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
+};
+
+const deleteImageById = async (id: number) => {
+  try {
+    const image = await prisma.image.delete({
+      where: {
+        id,
       },
     });
     return image;
@@ -39,4 +66,4 @@ const findImagePostById= async (id: number[]) => {
   }
 };
 
-export { findImageById, findImagePostById };
+export { findImageProjectById, findImagePostSingle,findImagePostById, deleteImageById };
