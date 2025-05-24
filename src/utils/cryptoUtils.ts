@@ -13,7 +13,6 @@ export function decryptData(cipherText: string): string {
 
   if (!decrypted) {
     console.log("Failed to decrypt or data is corrupted");
-    // throw new Error("Failed to decrypt or data is corrupted");
   }
 
   return decrypted;

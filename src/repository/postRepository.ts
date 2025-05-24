@@ -5,53 +5,54 @@ const prisma = new PrismaClient();
 
 const savePost = async (params: any) => {
   try {
-    const post = await prisma.$transaction(async ()=> {
-        const categories = Array.isArray(params.category)
+    const post = await prisma.$transaction(async () => {
+      const categories = Array.isArray(params.category)
         ? params.category : [params.category]
-        const files = params.image
-        const post = await prisma.post.create({
-          data: {
-            title: params.title,
-            slug: params.slug,
-            content: params.content,
-            published: params?.status,
-            authorId: params.authorId,
-            description: params.description,
-            categories: {
-              create: categories.map((categoryId: any) => ({
-                category: {
-                  connect: {
-                    id: categoryId,
-                  },
+      const files = params.image
+      const post = await prisma.post.create({
+        data: {
+          title: params.title,
+          slug: params.slug,
+          content: params.content,
+          published: params?.status,
+          authorId: params.authorId,
+          description: params.description,
+          categories: {
+            create: categories.map((categoryId: any) => ({
+              category: {
+                connect: {
+                  id: categoryId,
                 },
-              })),
-            },
-          },
-        });
-
-        const imagePromises = files.map((file: any) =>
-            prisma.image.create({
-              data: {
-                name: file.filename,
-                postId: post.id,
-                pathImg: `images/${file.filename}`,
               },
-            })
-          );
-        await Promise.all(imagePromises);
+            })),
+          },
+        },
+      });
+
+      const imagePromises = files.map((file: any) =>
+        prisma.image.create({
+          data: {
+            name: file.filename,
+            postId: post.id,
+            pathImg: `images/${file.filename}`,
+          },
+        })
+      );
+      await Promise.all(imagePromises);
+      return post;
     })
     return post;
   } catch (error) {
     console.log("Error", error);
     throw error;
-   }
+  }
 }
 
 const updatePostById = async (params: any) => {
   try {
-    const updatedPost = await prisma.$transaction(async ()=> {
+    const updatedPost = await prisma.$transaction(async () => {
       const categoriesAdd = Array.isArray(params.addCategory)
-      ? params.addCategory : [params.addCategory]
+        ? params.addCategory : [params.addCategory]
       const files = params.addImage
       const filesArray = files ?? [];
       const post = await prisma.post.update({
@@ -81,29 +82,29 @@ const updatePostById = async (params: any) => {
         },
       });
 
-      if(filesArray.length > 0) {
+      if (filesArray.length > 0) {
         const imagePromises = files.map((file: any) =>
           prisma.image.update({
-              where: {
-                id: file.id,
-              },
-              data: {
-                name: file.filename,
-                postId: post.id,
-                pathImg: `images/${file.filename}`,
-              },
-            })
-          );
+            where: {
+              id: file.id,
+            },
+            data: {
+              name: file.filename,
+              postId: post.id,
+              pathImg: `images/${file.filename}`,
+            },
+          })
+        );
         await Promise.all(imagePromises);
         return post;
       }
     })
-    
+
     return updatedPost;
-} catch (error) {
-  console.log("Error", error);
-  throw error;
-}
+  } catch (error) {
+    console.log("Error", error);
+    throw error;
+  }
 }
 
 const findAllPost = async (limit: number, offset: number, order: any) => {
@@ -114,7 +115,7 @@ const findAllPost = async (limit: number, offset: number, order: any) => {
       include: {
         author: true,
         categories: {
-          select:{
+          select: {
             category: {
               select: {
                 id: true,
@@ -181,53 +182,53 @@ const findPostBySlug = async (slug: string) => {
   }
 };
 
-const findOrCreateCategories =  async (categories: any[]) => {
-    try {
-        const categoryIds = await Promise.all(
-            categories.map(async (category: any) => {
-              const existingCategory = await prisma.category.findFirst({
-                where: {
-                  name: category.name,
-                  slug: category.slug,
-                },
-                select: {
-                  id: true,
-                },
-              });
-        
-              if (existingCategory) {
-                return existingCategory.id;
-              } else {
-                const newCategory = await prisma.category.create({
-                  data: {
-                    name: category.name,
-                    slug: category.slug,
-                  },
-                });
-                return newCategory.id;
-              }
-            })
-          );
-        return categoryIds;
-    } catch (error :any) {
-        console.log("Error", error);
-        throw error
-    }
-}
-      
-const findAllCatgeories = async () => {
-    try {
-        const categories = await prisma.category.findMany({
-            select: {
-              id: true,
-              name: true,
-              slug: true,
+const findOrCreateCategories = async (categories: any[]) => {
+  try {
+    const categoryIds = await Promise.all(
+      categories.map(async (category: any) => {
+        const existingCategory = await prisma.category.findFirst({
+          where: {
+            name: category.name,
+            slug: category.slug,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        if (existingCategory) {
+          return existingCategory.id;
+        } else {
+          const newCategory = await prisma.category.create({
+            data: {
+              name: category.name,
+              slug: category.slug,
             },
           });
-        return categories;
-    } catch (error :any) {
-        console.log("Error", error);
-        throw error
-    }
+          return newCategory.id;
+        }
+      })
+    );
+    return categoryIds;
+  } catch (error: any) {
+    console.log("Error", error);
+    throw error
+  }
+}
+
+const findAllCatgeories = async () => {
+  try {
+    const categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      },
+    });
+    return categories;
+  } catch (error: any) {
+    console.log("Error", error);
+    throw error
+  }
 }
 export { findAllPost, countPost, findPostById, findPostBySlug, findOrCreateCategories, savePost, updatePostById, findAllCatgeories };

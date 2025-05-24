@@ -1,5 +1,3 @@
-// 
-
 import { createServer } from "http";
 import app from "./app";
 import { initSocket } from "./src/utils/socket";
@@ -19,7 +17,7 @@ const startServer = async () => {
   // console.log("✅ Redis Connected");
   // await startSubscriber();
   // await subscribeToNotifications();
-  
+
   // await connectRabbitMQ();
   // console.log("✅ RabbitMQ Connected");
   // await startConsumeRabbit()

@@ -32,17 +32,22 @@ const userLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   let decryptedPassword = decryptData(password);
 
+  console.log("Checkkk", decryptedPassword);
   try {
     const user = await userService.getUserByEmail(email);
     if (user) {
+      console.log("masuk")
       const isMatch = await bcrypt.compare(decryptedPassword, user.password);
+      console.log("chck", isMatch)
       if (isMatch) {
         const token = jwt.sign({ email, user: user.name, id: user.id }, <Secret>secret, {
           expiresIn: "1h",
         });
-         
+
+        console.log("masuk ismatch")
+        console.log("get token", token)
         if (user.isActive === false || user.isActive === null) {
-          return res.status(401).json({ status : false, message: "User is not active" });
+          return res.status(401).json({ status: false, message: "User is not active" });
         }
 
         // await redis.publish("notifications", JSON.stringify({ userId: user.id, message: "🚀 Kamu berhasil login!" }));
@@ -52,23 +57,23 @@ const userLogin = async (req: Request, res: Response) => {
             userId: user.id, // Pastikan ini ada
             message: "🚀 Kamu berhasil login!"
           }));
-          
+
           console.log("✅ Notifikasi berhasil dikirim!");
         } catch (err) {
           console.error("❌ Error saat publish ke Redis:", err);
         }
-        
+
         return res.status(200).json(apiResponse("Successfully Login", 200, "success", {
-            user: {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              createdAt: user.createdAt,
-              updatedAt: user.updatedAt,
-              pathImg: user?.pathImg
-            },
-            token: `Bearer ${token}`,
-          })
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            pathImg: user?.pathImg
+          },
+          token: `Bearer ${token}`,
+        })
         );
       } else {
         return res.status(401).json({ message: "Invalid credentials", status: false });
@@ -115,8 +120,9 @@ const checkAuth = async (req: Request, res: Response) => {
 };
 
 const decryptTest = async (req: Request, res: Response) => {
-  const { data } = req.body;
-  const encryptedData = encryptData(data);
-  res.json({ encryptedData });
+  const { dataE, dataD } = req.body;
+  const encryptedData = encryptData(dataE);
+  const decryptedData = decryptData(dataD);
+  res.json({ encryptedData, decryptedData });
 };
-export {publishMessage, userLogin, checkAuth, decryptTest };
+export { publishMessage, userLogin, checkAuth, decryptTest };

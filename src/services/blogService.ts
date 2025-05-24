@@ -16,7 +16,8 @@ const createPosts = async (params: any) => {
     }
 
     let category = []
-    if(categories) {
+
+    if (categories) {
       for (let i = 0; i < categories.length; i++) {
         let slugCategory = slug(categories[i])
         let nameCategory = categories[i]
@@ -31,7 +32,7 @@ const createPosts = async (params: any) => {
     let checkCategoryPost = await findOrCreateCategories(category)
     params.category = checkCategoryPost
 
-    params.status =  params.status === "1" ? true : false
+    params.status = params.status === "1" ? true : false
 
     const checkSlugPost = await findPostBySlug(params.slug)
     if (checkSlugPost) {
@@ -61,7 +62,7 @@ const updatePosts = async (params: any) => {
     // }
 
     let categoryAdd = []
-    if(addCategory?.length > 0) {
+    if (addCategory?.length > 0) {
       for (let i = 0; i < addCategory.length; i++) {
         let slugCategory = slug(addCategory[i])
         let nameCategory = addCategory[i]
@@ -72,33 +73,33 @@ const updatePosts = async (params: any) => {
         categoryAdd.push(categoryObj)
       }
     }
-    
+
     let checkCategoryPost = await findOrCreateCategories(categoryAdd)
     params.addCategory = checkCategoryPost
 
-    if(removeCategory?.length > 0) {
+    if (removeCategory?.length > 0) {
       await unlinkCategories(params.idPost, removeCategory)
     }
 
     params.status = params.status === 1 ? true : false
 
-    if(params?.removeImage) {
-      if(params.removeImage.length > 0) {
+    if (params?.removeImage) {
+      if (params.removeImage.length > 0) {
         // for (let i=0; i<params.removeImage.length; i++) {
-          const checkImage: any = await findImagePostById(params?.removeImage)
-          if (checkImage && checkImage.length > 0) {
-            console.log("check image",checkImage)
-            for (const image of checkImage) {
-              const oldImagePath = `public/${image.pathImg}`;
-              try {
-                await deleteImageById(image.id);
-                await fs.unlink(path.join(oldImagePath));
-                console.log(`Deleted image: ${image.pathImg}`);
-              } catch (err) {
-                console.error(`Failed to delete image: ${image.pathImg}`, err);
-              }
+        const checkImage: any = await findImagePostById(params?.removeImage)
+        if (checkImage && checkImage.length > 0) {
+          console.log("check image", checkImage)
+          for (const image of checkImage) {
+            const oldImagePath = `public/${image.pathImg}`;
+            try {
+              await deleteImageById(image.id);
+              await fs.unlink(path.join(oldImagePath));
+              console.log(`Deleted image: ${image.pathImg}`);
+            } catch (err) {
+              console.error(`Failed to delete image: ${image.pathImg}`, err);
             }
           }
+        }
         // }
       }
     }
@@ -405,7 +406,7 @@ const findBySlug = async (slug: string) => {
 
 const deleteBlog = async (id: number) => {
   try {
-    const checkImg:any = await findImagePostSingle(id)
+    const checkImg: any = await findImagePostSingle(id)
     try {
       const oldImagePath = `public/${checkImg?.pathImg}`;
       try {
@@ -417,7 +418,7 @@ const deleteBlog = async (id: number) => {
     } catch (error) {
       console.log("Error", error);
       throw error;
-  }
+    }
 
     const post = await prisma.post.delete({
       where: {
@@ -426,10 +427,10 @@ const deleteBlog = async (id: number) => {
     });
 
     return post;
-} catch (error) {
-  console.log("Error", error);
-  return error;
-}
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
 };
 export {
   findById,
