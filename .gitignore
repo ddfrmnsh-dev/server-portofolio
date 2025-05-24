@@ -3,3 +3,7 @@
 /Dockerfile
 /public
 .qodo
+
+# Build output
+dist/
+build/
