@@ -1,6 +1,4 @@
 import express, { Request, Response } from "express";
-import userRouter from "./src/routes/userRoutes";
-import adminRouter from "./src/routes/adminRoutes";
 import apiRouter from "./src/routes/apiRoutes";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -18,9 +16,10 @@ import { connectRedis } from "./src/utils/redis";
 import { startSubscriber, subscribeToNotifications } from "./src/services/redisSubsService";
 import { initSocket } from "./src/utils/socket";
 import { createServer } from "http";
+import { logger } from "./src/middleware/loggerMiddleware";
 const app = express();
 const router = express.Router();
-const server = createServer(app); 
+const server = createServer(app);
 
 const corsOptions = {
   // origin: ["https://ddfrmnsh.tech"],
@@ -40,6 +39,7 @@ const corsOptions = {
 
 // Terapkan middleware untuk semua rute
 // app.use(limiter);
+app.use(logger);
 app.use(healthCheckMiddleware);
 // Middleware untuk mengaktifkan CORS
 app.use(cors(corsOptions));
@@ -74,8 +74,6 @@ app.use(
   express.static(path.join(__dirname, "node_modules/jquery/dist"))
 );
 app.use(router);
-app.use("/admin", adminRouter);
-app.use(userRouter);
 app.use("/api", apiRouter);
 router.get("/", function tesRoute(req: Request, res: Response) {
   return res.redirect("/admin/signin");
