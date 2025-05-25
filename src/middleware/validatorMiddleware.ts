@@ -1,15 +1,27 @@
 import { ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 
-export const zodValidator = (schema: ZodSchema) => (
+type ValidationSchemas = {
+    body?: ZodSchema;
+    params?: ZodSchema;
+    query?: ZodSchema;
+};
+
+export const zodValidator = (schemas: ValidationSchemas) => (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        schema.parse(req.body);
+        if (schemas.body) schemas.body.parse(req.body);
+        if (schemas.params) schemas.params.parse(req.params);
+        if (schemas.query) schemas.query.parse(req.query);
         next();
     } catch (error: any) {
-        res.status(400).json({ message: "Validation failed", status: false, errors: error.errors });
+        return res.status(400).json({
+            message: "Validation failed",
+            status: false,
+            errors: error.errors,
+        });
     }
 };

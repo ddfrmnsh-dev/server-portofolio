@@ -7,6 +7,7 @@ import { decryptData, encryptData } from "../utils/cryptoUtils";
 import { stat } from "fs-extra";
 import { apiResponse } from "../utils/responseApi";
 import { redisPublisher } from "../utils/redis";
+import { logger } from "../utils/logger";
 
 let secret = process.env.TOKEN_SECRET;
 const redis = redisPublisher;
@@ -32,11 +33,9 @@ const userLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   let decryptedPassword = decryptData(password);
 
-  console.log("Checkkk", decryptedPassword);
   try {
     const user = await userService.getUserByEmail(email);
     if (user) {
-      console.log("masuk")
       const isMatch = await bcrypt.compare(decryptedPassword, user.password);
       console.log("chck", isMatch)
       if (isMatch) {
@@ -44,24 +43,24 @@ const userLogin = async (req: Request, res: Response) => {
           expiresIn: "1h",
         });
 
-        console.log("masuk ismatch")
-        console.log("get token", token)
         if (user.isActive === false || user.isActive === null) {
           return res.status(401).json({ status: false, message: "User is not active" });
         }
 
         // await redis.publish("notifications", JSON.stringify({ userId: user.id, message: "🚀 Kamu berhasil login!" }));
-        try {
-          console.log("🔔 Mencoba publish ke Redis...");
-          await redisPublisher.publish("notifications", JSON.stringify({
-            userId: user.id, // Pastikan ini ada
-            message: "🚀 Kamu berhasil login!"
-          }));
+        // try {
+        //   console.log("🔔 Mencoba publish ke Redis...");
+        //   await redisPublisher.publish("notifications", JSON.stringify({
+        //     userId: user.id, // Pastikan ini ada
+        //     message: "🚀 Kamu berhasil login!"
+        //   }));
 
-          console.log("✅ Notifikasi berhasil dikirim!");
-        } catch (err) {
-          console.error("❌ Error saat publish ke Redis:", err);
-        }
+        //   console.log("✅ Notifikasi berhasil dikirim!");
+        // } catch (err) {
+        //   console.error("❌ Error saat publish ke Redis:", err);
+        // }
+
+        logger.info({ email }, 'User attempting login');
 
         return res.status(200).json(apiResponse("Successfully Login", 200, "success", {
           user: {

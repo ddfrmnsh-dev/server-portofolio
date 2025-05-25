@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as userService from "../../services/userService";
 import { apiResponse } from "../../utils/responseApi";
 import { decryptData } from "../../utils/cryptoUtils";
+import { logger } from "../../utils/logger";
 
 const getAllUser = async (req: Request, res: Response) => {
   try {
@@ -19,29 +20,11 @@ const getAllUser = async (req: Request, res: Response) => {
       user: user,
       page: page,
       userActive: activeUsers,
-      total: totalUsers  // Pastikan mengirimkan totalUsers bukan totalPages
+      total: totalUsers
     };
 
-    return res.json(apiResponse("get all user", 200, "success", data));
-
-    // const page = parseInt(req.query.page as string) || 1;
-    // const limit = parseInt(req.query.limit as string) || 5;
-    // const order = req.query.order || "asc";
-    // const offset = (page - 1) * limit;
-
-    // let user = await userService.getAllUser(limit, offset, order);
-
-    // console.log(user);
-    // const totalUsers: any = await userService.countUser();
-
-    // const totalPages = Math.ceil(totalUsers / limit);
-
-    // let data = {
-    //   user: user,
-    //   page: page,
-    //   total: totalPages
-    // }
-    // return res.json(apiResponse("get all user", 200, "success", data));
+    logger.info({ data }, "Get all users")
+    return res.json(apiResponse("Get all users", 200, "success", data));
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: error });
@@ -53,13 +36,9 @@ const createUser = async (req: Request, res: Response) => {
 
     const { name, email, password, username } = req.body
 
-    console.log("check pw", password)
     let decryptedPassword = decryptData(password)
 
-
-    console.log(decryptedPassword)
-    const user = await userService.createUser(name, email, password, username)
-    // const user = await userService.createUser(name, email, decryptedPassword, username)
+    const user = await userService.createUser(name, email, decryptedPassword, username)
     return res.status(200).json(apiResponse("create user", 200, "success", user));
   } catch (error: any) {
     const errorMessage = error.message || 'An unexpected error occurred';

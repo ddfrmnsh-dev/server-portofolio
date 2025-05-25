@@ -35,7 +35,7 @@ const createProject = async (params: any) => {
 const getAllProjects = async (take: number, skip: number, order: any) => {
   try {
     const project = await findAllProject(take, skip, order);
-    
+
     if (!project) {
       throw new Error("Project not found");
     }
@@ -58,12 +58,16 @@ const countProjects = async () => {
 };
 const getProjectById = async (id: number) => {
   try {
+    if (isNaN(id) || !Number.isInteger(Number(id))) {
+      throw new Error("Parameter 'id' must be a valid number");
+    }
+
     const project = await findProjectById(id);
 
     return project;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 
@@ -103,7 +107,7 @@ const deleteProjects = async (id: number) => {
     const getImage: any = await findImageProjectById(checkProject.id);
     if (getImage?.pathImg) {
       const deleteImgPath = path.join("public", getImage.pathImg);
-    
+
       // Cek apakah file benar-benar ada sebelum menghapus
       if (fs.existsSync(deleteImgPath)) {
         try {
@@ -145,18 +149,18 @@ const updateProjects = async (params: any, ids: number) => {
     }
 
     console.log("params.files", params.files);
-    if(params.files !== undefined && checkProject.image[0].pathImg) {
+    if (params.files !== undefined && checkProject.image[0].pathImg) {
       const splitPath = checkProject.image[0].pathImg.split("/");
       const lastIndex = splitPath[splitPath.length - 1];
 
       if (lastIndex !== "undefined") {
-            const deleteImgPath = path.join("public", checkProject.image[0].pathImg);
-            try {
-              await fs.unlink(deleteImgPath);
-              console.log(`Deleted old image: ${deleteImgPath}`);
-            } catch (err) {
-              console.error(`Failed to delete old image: ${deleteImgPath}`, err);
-            }
+        const deleteImgPath = path.join("public", checkProject.image[0].pathImg);
+        try {
+          await fs.unlink(deleteImgPath);
+          console.log(`Deleted old image: ${deleteImgPath}`);
+        } catch (err) {
+          console.error(`Failed to delete old image: ${deleteImgPath}`, err);
+        }
       }
     }
 

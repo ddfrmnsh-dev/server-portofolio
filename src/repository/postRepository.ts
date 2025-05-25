@@ -113,7 +113,12 @@ const findAllPost = async (limit: number, offset: number, order: any) => {
       take: limit,
       skip: offset,
       include: {
-        author: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
         categories: {
           select: {
             category: {

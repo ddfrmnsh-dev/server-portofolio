@@ -1,7 +1,5 @@
 import express, { Request, Response } from "express";
-import * as projectController from "../controllers/projectController";
 import * as authController from "../controllers/authController";
-import * as blogController from "../controllers/blogController";
 import * as apiProjectController from "../controllers/api/projectController";
 import * as apiBlogController from "../controllers/api/blogController";
 import * as apiUserController from "../controllers/api/userController";
@@ -10,19 +8,22 @@ import dotenv from "dotenv";
 import authMiddleware from "../middleware/authMiddleware";
 import rateLimiter from "../middleware/rateLimiter";
 import upload from "../middleware/multerUpload";
+import { zodValidator } from "../middleware/validatorMiddleware";
+import { loginSchema, registerSchema } from "../validations/userValidation";
+import { findProjectSchema } from "../validations/projectValidation";
 dotenv.config();
 
 const router = express.Router();
 
 //API-AUTH
-router.post("/auth/adminSigninEnc", rateLimiter.limiter, authController.userLogin);
+router.post("/auth/adminSigninEnc", zodValidator({ body: loginSchema }), rateLimiter.limiter, authController.userLogin);
 router.post("/testDes", authController.decryptTest);
 
 //API-PROJECT-DONE
 router.get("/v1/project", apiProjectController.getAllProject);
-router.get("/v1/project/:id", apiProjectController.getProjectById);
+router.get("/v1/project/:id", zodValidator({ params: findProjectSchema }), apiProjectController.getProjectById);
 router.post("/v1/project", upload("images").single("img"), authMiddleware.authMiddlewares, apiProjectController.createProject);
-router.put("/v1/project/:id", upload("images").single("img"),authMiddleware.authMiddlewares, apiProjectController.updateProject);
+router.put("/v1/project/:id", upload("images").single("img"), authMiddleware.authMiddlewares, apiProjectController.updateProject);
 router.delete("/v1/project/:id", authMiddleware.authMiddlewares, apiProjectController.deleteProject);
 
 //API-BLOG
@@ -38,7 +39,7 @@ router.delete("/v1/post/:id", authMiddleware.authMiddlewares, apiBlogController.
 //API-USER
 router.get("/v1/users", authMiddleware.authMiddlewares, apiUserController.getAllUser);
 router.get("/v1/user/:id", authMiddleware.authMiddlewares, apiUserController.getUserById);
-router.post("/v1/user", apiUserController.createUser);
+router.post("/v1/user", zodValidator({ body: registerSchema }), apiUserController.createUser);
 router.put("/v1/editUser", apiUserController.createUser);
 router.delete("/v1/user/:id", authMiddleware.authMiddlewares, apiUserController.deleteUser);
 router.put("/v1/user/:id", authMiddleware.authMiddlewares, apiUserController.updateUserById);

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as blogService from "../../services/blogService";
 import { apiResponse } from "../../utils/responseApi";
 import slug from "slug";
+import cache from "../../utils/cache";
 
 const getAllBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -10,23 +11,30 @@ const getAllBlog = async (req: Request, res: Response, next: NextFunction) => {
     const order = (req.query.order as string) || "asc";
     const offset = (page - 1) * limit;
 
-    const blogs = await blogService.getAllPosts(limit, offset, order);
+    const cacheKey = `posts-page-${page}-limit-${limit}-order-${order}`;
+    const cachePost = cache.get(cacheKey);
 
-    const totalPosts: any = await blogService.countPost();
-    if (totalPosts === 0) {
-      return res.status(404).json({ status: false, message: "Post not found" });
+    if (cachePost) {
+      console.log("data cache", cachePost)
+      return res.json(apiResponse("Get all Articles", 200, "Success", cachePost));
     }
 
-    if (!blogs) {
+    const posts = await blogService.getAllPosts(limit, offset, order);
+
+    const totalPosts: any = await blogService.countPost();
+
+    if (!posts || totalPosts === 0) {
       return res.status(404).json({ status: false, message: "Post not found" });
     }
 
     const data: any = {
-      articles: blogs,
+      articles: posts,
       total: totalPosts,
       page: page,
       limit: limit,
     };
+
+    cache.set(cacheKey, data)
 
     return res.json(apiResponse("Get all Articles", 200, "Success", data));
   } catch (error: any) {
@@ -44,6 +52,8 @@ const getAllBlog = async (req: Request, res: Response, next: NextFunction) => {
 
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    cache.flushAll();
+
     const { title, description, content, status, category } = req.body;
     const authorId = req.decoded.id;
     const image = req.files as Express.Multer.File[];

@@ -22,34 +22,34 @@ const findAllProject = async (limit: number, offset: number, order: any) => {
 };
 
 const saveProject = async (params: any) => {
-    try {
-        const files = params.files;
-        const project = await prisma.$transaction(async (prisma) => {
-          const newProject = await prisma.project.create({
-            data: {
-              name: params.name,
-              description: params.description,
-              linkWebsite: params.link,
-              clientId: params.clientId,
-              userId: params.userId,
-              slug: params.slug,
-            },
-          });
+  try {
+    const files = params.files;
+    const project = await prisma.$transaction(async (prisma) => {
+      const newProject = await prisma.project.create({
+        data: {
+          name: params.name,
+          description: params.description,
+          linkWebsite: params.link,
+          clientId: params.clientId,
+          userId: params.userId,
+          slug: params.slug,
+        },
+      });
 
-          await prisma.image.create({
-            data: {
-                name: files.filename,
-                projectId: newProject.id,
-                pathImg: `images/${files.filename}`,
-            },
-          });
-        });
+      await prisma.image.create({
+        data: {
+          name: files.filename,
+          projectId: newProject.id,
+          pathImg: `images/${files.filename}`,
+        },
+      });
+    });
 
-        return project;
-    } catch (error) {
-        console.log("Error", error);
-        return error;
-      }
+    return project;
+  } catch (error) {
+    console.log("Error", error);
+    return error;
+  }
 }
 
 const findProjectById = async (id: number) => {
@@ -66,60 +66,60 @@ const findProjectById = async (id: number) => {
     return project;
   } catch (error) {
     console.log("Error", error);
-    return error;
+    throw error;
   }
 };
 
 const updateProject = async (params: any, ids: number) => {
   try {
-      const files = params.files;
-        const project = await prisma.$transaction(async (prisma) => {
-          await prisma.project.update({
-            where: {
-              id: ids,
+    const files = params.files;
+    const project = await prisma.$transaction(async (prisma) => {
+      await prisma.project.update({
+        where: {
+          id: ids,
+        },
+        data: {
+          name: params.name,
+          description: params.description,
+          linkWebsite: params.link,
+          author: {
+            connect: {
+              id: params.userId,
             },
-            data: {
-              name: params.name,
-              description: params.description,
-              linkWebsite: params.link,
-              author: {
-                connect: {
-                  id: params.userId,
-                },
-              },
-              slug: params.slug,
-              client: {
-                connect: {
-                  id: params.clientId,
-                },
-              }
-            }
-          });
+          },
+          slug: params.slug,
+          client: {
+            connect: {
+              id: params.clientId,
+            },
+          }
+        }
+      });
 
-          if (files && files != undefined) {
-            const images: any = await prisma.image.findMany({
-              where: {
-                projectId: ids,
-              },
-            });
-
-            await prisma.image.update({
-              where: {
-                id: images[0].id,
-              },
-              data: {
-                name: files,
-                pathImg: `images/${files}`,
-              },
-            });
-            
-          }          
+      if (files && files != undefined) {
+        const images: any = await prisma.image.findMany({
+          where: {
+            projectId: ids,
+          },
         });
 
-      return project;
+        await prisma.image.update({
+          where: {
+            id: images[0].id,
+          },
+          data: {
+            name: files,
+            pathImg: `images/${files}`,
+          },
+        });
+
+      }
+    });
+
+    return project;
   } catch (error) {
-      console.log("Error", error);
-      throw error;
+    console.log("Error", error);
+    throw error;
   }
 };
 

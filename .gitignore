@@ -6,4 +6,5 @@
 
 # Build output
 dist/
+logs/
 build/
